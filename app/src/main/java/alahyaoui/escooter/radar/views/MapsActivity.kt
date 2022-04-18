@@ -1,5 +1,6 @@
-package alahyaoui.escooter.radar
+package alahyaoui.escooter.radar.views
 
+import alahyaoui.escooter.radar.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
