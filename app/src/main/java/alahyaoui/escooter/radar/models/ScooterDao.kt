@@ -25,7 +25,7 @@ interface ScooterDao {
     fun delete(scooter: Scooter)
 
     @Delete
-    fun deleteAll()
+    fun deleteAll(scooters: List<Scooter>)
 
     // GET
     @Query("SELECT * FROM Scooter")
