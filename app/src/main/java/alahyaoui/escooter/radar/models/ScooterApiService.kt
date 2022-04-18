@@ -35,7 +35,7 @@ interface ScooterApiService {
      * The @GET annotation indicates that the "scooter" endpoint will be requested with the GET
      * HTTP method
      */
-    @GET("scooter")
+    @GET("scooter/{zone}")
     suspend fun getScooters(@Path("zone") zone: String): List<Scooter>
 }
 
