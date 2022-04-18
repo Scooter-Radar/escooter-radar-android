@@ -1,4 +1,4 @@
-package alahyaoui.escooter.radar.database
+package alahyaoui.escooter.radar.models
 
 import alahyaoui.escooter.radar.utils.DateConverter
 import android.content.Context

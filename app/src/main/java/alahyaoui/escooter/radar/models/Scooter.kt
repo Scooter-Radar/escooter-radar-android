@@ -1,4 +1,4 @@
-package alahyaoui.escooter.radar.database
+package alahyaoui.escooter.radar.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
