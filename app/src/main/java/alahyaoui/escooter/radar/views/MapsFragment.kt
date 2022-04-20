@@ -19,7 +19,10 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
@@ -115,7 +118,7 @@ class MapsFragment : Fragment() {
     }
 
     private fun getAddress(latLng: LatLng): Address {
-        val geocoder = Geocoder(context, Locale.getDefault())
+        val geocoder = Geocoder(context, Locale.ENGLISH)
         val addresses: List<Address> = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
         return addresses[0]
     }
