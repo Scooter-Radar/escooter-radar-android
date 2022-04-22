@@ -89,9 +89,15 @@ class MapsFragment : Fragment() {
         }
     }
 
-    private fun getAddress(latLng: LatLng): Address {
-        val geocoder = Geocoder(context, Locale.getDefault())
-        val addresses: List<Address> = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5)
+    private fun getAddress(location: LatLng): Address {
+        val local: Locale
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            local = Locale.Builder().setLanguage("EN").setScript("Latn").setRegion("US").build()
+        }else{
+            local = Locale("EN")
+        }
+        val geocoder = Geocoder(context, local)
+        val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 5)
         return addresses[3]
     }
 
