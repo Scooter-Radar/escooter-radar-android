@@ -7,6 +7,7 @@ import alahyaoui.escooter.radar.viewmodels.MapsViewModel
 import alahyaoui.escooter.radar.viewmodels.MapsViewModelFactory
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
@@ -14,8 +15,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +40,9 @@ class MapsFragment : Fragment() {
 
     private lateinit var mMap: GoogleMap
 
+    private val REQUEST_LOCATION_PERMISSION = 1
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Create an instance of the ViewModel Factory.
         val application = requireNotNull(this.activity).application
@@ -55,54 +60,21 @@ class MapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        askLocationPermission()
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun askLocationPermission() {
-        val locationPermissionRequest =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                when {
-                    permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                        // Precise location access granted.
-                    }
-                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                        // Only approximate location access granted.
-                    }
-                    else -> {
-                        // No location access granted.
-                    }
-                }
-            }
-
-        locationPermissionRequest.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-    }
-
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
-        mMap.isMyLocationEnabled = true
+        enableMyLocation()
 
         mapsViewModel.scootersLiveData.observe(viewLifecycleOwner, Observer {
             updateMap()
         })
 
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        mMap.setOnMyLocationChangeListener({ location ->
-            val userLocation = LatLng(location.latitude, location.longitude)
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
-
-            val userAddress = getAddress(userLocation)
-            mapsViewModel.fetchScootersFromApi(userAddress.locality)
-        })
     }
 
     private fun updateMap() {
@@ -118,8 +90,32 @@ class MapsFragment : Fragment() {
     }
 
     private fun getAddress(latLng: LatLng): Address {
-        val geocoder = Geocoder(context, Locale.ENGLISH)
-        val addresses: List<Address> = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-        return addresses[0]
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val addresses: List<Address> = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 5)
+        return addresses[3]
+    }
+
+    // Permission handling
+
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mMap.isMyLocationEnabled = true
+            mMap.setOnMyLocationChangeListener({ location ->
+                val userLocation = LatLng(location.latitude, location.longitude)
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
+                val userAddress = getAddress(userLocation)
+                mapsViewModel.fetchScootersFromApi(userAddress.locality)
+            })
+        } else {
+            requestPermissions(
+                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
     }
 }
