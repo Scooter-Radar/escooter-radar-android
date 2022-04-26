@@ -15,9 +15,9 @@ data class Scooter (
     @Json(name = "company")
     var company: String,
 
-    @ColumnInfo(name = "zone")
-    @Json(name = "zone")
-    var zone: String,
+    @ColumnInfo(name = "city")
+    @Json(name = "city")
+    var city: String,
 
     @ColumnInfo(name = "lat")
     @Json(name = "lat")
