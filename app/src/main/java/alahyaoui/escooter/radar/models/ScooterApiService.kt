@@ -6,8 +6,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
-private const val BASE_URL = "https://escooter-radar-backend.herokuapp.com/api/"
+private const val BASE_URL = "http://escooter-radar-backend-env.eba-gkj72vkn.eu-west-3.elasticbeanstalk.com/api/"
 
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
@@ -35,8 +36,25 @@ interface ScooterApiService {
      * The @GET annotation indicates that the "scooter" endpoint will be requested with the GET
      * HTTP method
      */
-    @GET("scooter/{zone}")
-    suspend fun getScooters(@Path("zone") zone: String): List<Scooter>
+    @GET("scooter/provider")
+    suspend fun getScootersByCompany(@Query("company") zone: String): List<Scooter>
+
+    @GET("scooter/location/zone")
+    suspend fun getScootersByCity(@Query("city") zone: String): List<Scooter>
+
+    @GET("scooter/location/within")
+    suspend fun getScootersByLocationWithinDegree(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("degree") degree: Double
+    ): List<Scooter>
+
+    @GET("scooter/location/near")
+    suspend fun getScootersNearLocation(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("limit") nbOfScooters: Int
+    ): List<Scooter>
 }
 
 /**

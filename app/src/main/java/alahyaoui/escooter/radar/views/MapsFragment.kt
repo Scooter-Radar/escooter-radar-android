@@ -2,35 +2,31 @@ package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
-import alahyaoui.escooter.radar.models.ScooterDatabase
+import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
-import alahyaoui.escooter.radar.viewmodels.MapsViewModelFactory
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import java.util.*
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentMapsBinding? = null
 
@@ -40,17 +36,11 @@ class MapsFragment : Fragment() {
 
     private lateinit var mMap: GoogleMap
 
-    private val REQUEST_LOCATION_PERMISSION = 1
-
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // Create an instance of the ViewModel Factory.
-        val application = requireNotNull(this.activity).application
-        val dataSource = ScooterDatabase.getInstance(application).scooterDao
-        val viewModelFactory = MapsViewModelFactory(dataSource)
-
         // Get a reference to the ViewModel associated with this fragment.
-        mapsViewModel = ViewModelProvider(this, viewModelFactory)[MapsViewModel::class.java]
+        mapsViewModel = ViewModelProvider(this)[MapsViewModel::class.java]
 
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,7 +50,6 @@ class MapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
@@ -68,59 +57,87 @@ class MapsFragment : Fragment() {
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
-        enableMyLocation()
+        requestPermissions()
 
-        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner, Observer {
-            updateMap()
-        })
-
-        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        initViewModelObservers()
     }
 
-    private fun updateMap() {
+    private fun initViewModelObservers(){
+        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) {
+            addScooterMarkers()
+        }
+
+        mapsViewModel.userLocationLiveData.observe(viewLifecycleOwner) {
+            mapsViewModel.fetchScootersFromApi()
+        }
+
+        mapsViewModel.nbOfScootersLiveData.observe(viewLifecycleOwner) {
+            mapsViewModel.fetchScootersFromApi()
+        }
+    }
+
+    private fun addScooterMarkers() {
         val scooters = mapsViewModel.scootersLiveData.value
         if (scooters != null) {
             for (scooter in scooters) {
-                    mMap.addMarker(
-                        MarkerOptions().position(LatLng(scooter.latitude, scooter.longitude))
-                            .title(scooter.company)
-                    )
+                val scooterLat = scooter.location.coordinates[1]
+                val scooterLong = scooter.location.coordinates[0]
+                mMap.addMarker(
+                    MarkerOptions().position(LatLng(scooterLat, scooterLong))
+                        .title(scooter.company)
+                )
             }
         }
     }
 
-    private fun getAddress(location: LatLng): Address {
-        val local: Locale
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            local = Locale.Builder().setLanguage("EN").setScript("Latn").setRegion("US").build()
-        }else{
-            local = Locale("EN")
-        }
-        val geocoder = Geocoder(context, local)
-        val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 5)
-        return addresses[3]
-    }
-
     // Permission handling
 
-    @SuppressLint("MissingPermission")
-    private fun enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            mMap.isMyLocationEnabled = true
-            mMap.setOnMyLocationChangeListener({ location ->
-                val userLocation = LatLng(location.latitude, location.longitude)
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
-                val userAddress = getAddress(userLocation)
-                mapsViewModel.fetchScootersFromApi(userAddress.locality)
-            })
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {}
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
         } else {
-            requestPermissions(
-                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
+            requestPermissions()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestPermissions() {
+        if (TrackingUtility.hasLocationPermissions(requireContext())) {
+            mMap.isMyLocationEnabled = true
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener  { location ->
+                mapsViewModel.userLocationLiveData.value = location
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
+            }
+
+            mMap.setOnMyLocationChangeListener { location ->
+                mapsViewModel.userLocationLiveData.value = location
+            }
+            return
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions to use this app",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions to use this app",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
         }
     }
