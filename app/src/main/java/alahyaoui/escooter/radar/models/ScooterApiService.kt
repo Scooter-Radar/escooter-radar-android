@@ -39,14 +39,21 @@ interface ScooterApiService {
     @GET("scooter/provider")
     suspend fun getScootersByCompany(@Query("company") zone: String): List<Scooter>
 
-    @GET("scooter/zone")
+    @GET("scooter/location/zone")
     suspend fun getScootersByCity(@Query("city") zone: String): List<Scooter>
 
-    @GET("scooter/location")
+    @GET("scooter/location/within")
     suspend fun getScootersByLocationWithinDegree(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
         @Query("degree") degree: Double
+    ): List<Scooter>
+
+    @GET("scooter/location/near")
+    suspend fun getScootersNearLocation(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("limit") nbOfScooters: Int
     ): List<Scooter>
 }
 
