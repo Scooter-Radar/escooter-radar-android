@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/text_view_company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Title"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Title" />
+
+    <TextView
+        android:id="@+id/text_view_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="City"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="City" />
+
+    <TextView
+        android:id="@+id/text_view_current_range_meters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Current range meters"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="Current range meters" />
+
+    <TextView
+        android:id="@+id/text_view_last_reported"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Last Reported"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="Last Reported" />
+
+    <TextView
+        android:id="@+id/text_view_is_disabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Is Disabled ?"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="Is Disabled ?" />
+
+    <TextView
+        android:id="@+id/text_view_is_reserved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Is Reserved ?"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        tools:text="Is Reserved ?" />
+
+
+</LinearLayout>
