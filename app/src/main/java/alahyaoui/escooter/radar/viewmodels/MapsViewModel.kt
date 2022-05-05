@@ -16,7 +16,7 @@ class MapsViewModel() : ViewModel() {
 
     val scootersLiveData: LiveData<List<Scooter>> = _scootersLiveData
 
-    val userLocationLiveData = MutableLiveData<Location>()
+    var userLocation : Location? = null
 
     val nbOfScootersLiveData = MutableLiveData<Int>()
 
@@ -26,8 +26,8 @@ class MapsViewModel() : ViewModel() {
 
     fun fetchScootersFromApi() {
         viewModelScope.launch {
-            val latitude = userLocationLiveData.value?.latitude
-            val longitude = userLocationLiveData.value?.longitude
+            val latitude = userLocation?.latitude
+            val longitude = userLocation?.longitude
             val nbOfScooters = nbOfScootersLiveData.value
             if (latitude != null && longitude != null && nbOfScooters != null) {
                 try {
