@@ -106,12 +106,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         clusterManager.addItems(scooters)
         clusterManager.cluster()
 
-        // Show polygon
-        clusterManager.setOnClusterItemClickListener { item ->
-            addCircle(item)
-            return@setOnClusterItemClickListener false
-        }
-
         // When the camera starts moving, change the alpha value of the marker to translucent
         mMap.setOnCameraMoveStartedListener {
             clusterManager.markerCollection.markers.forEach { it.alpha = 0.3f }
@@ -126,21 +120,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             // Call clusterManager.onCameraIdle() when the camera stops moving so that re-clustering
             // can be performed when the camera stops moving
             clusterManager.onCameraIdle()
-        }
-    }
-
-    private var circle: Circle? = null
-
-    /**
-     * Adds a [Circle] around the provided [item]
-     */
-    private fun addCircle(item: Scooter) {
-        circle?.remove()
-        circle = mMap.addCircle {
-            center(item.position)
-            radius(1000.0)
-            fillColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryTranslucent))
-            strokeColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
         }
     }
 
