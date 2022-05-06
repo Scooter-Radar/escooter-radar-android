@@ -11,9 +11,7 @@ import alahyaoui.escooter.radar.viewmodels.MapsViewModel
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -33,9 +31,7 @@ import pub.devrel.easypermissions.EasyPermissions
 
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
-    private var _binding: FragmentMapsBinding? = null
-
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentMapsBinding
 
     private lateinit var mapsViewModel: MapsViewModel
 
@@ -47,7 +43,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Get a reference to the ViewModel associated with this fragment.
         mapsViewModel = ViewModelProvider(this)[MapsViewModel::class.java]
 
-        _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
