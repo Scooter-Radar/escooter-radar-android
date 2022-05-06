@@ -77,8 +77,11 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
             // Ensure all places are visible in the map
             val bounds = LatLngBounds.builder()
-            mapsViewModel.scootersLiveData.value?.forEach { bounds.include(it.position) }
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+            val scooters = mapsViewModel.scootersLiveData.value
+            if(scooters?.size != 0){
+                scooters?.forEach { bounds.include(it.position) }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+            }
         }
     }
 
