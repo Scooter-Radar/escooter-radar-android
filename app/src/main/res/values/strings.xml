@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">Scooter Radar</string>
+
+    <!-- Navigation Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Scooter Radar</string>
     <string name="nav_header_desc">Navigation header</string>
+
+    <!-- App Bar action -->
     <string name="action_settings">Settings</string>
 
+    <!-- Map -->
     <string name="menu_maps">Maps</string>
+    <string name="normal_map">Normal Map</string>
+    <string name="hybrid_map">Hybrid Map</string>
+    <string name="satellite_map">Satellite Map</string>
+    <string name="terrain_map">Terrain Map</string>
 </resources>
