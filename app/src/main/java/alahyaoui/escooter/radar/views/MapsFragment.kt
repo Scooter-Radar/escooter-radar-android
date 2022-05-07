@@ -4,7 +4,6 @@ import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
-import androidx.navigation.findNavController
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
@@ -15,9 +14,6 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,10 +21,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.maps.android.clustering.ClusterManager
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import androidx.navigation.fragment.NavHostFragment
 
 
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
@@ -102,7 +98,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         clusterManager.cluster()
 
         clusterManager.setOnClusterItemClickListener { item ->
-            findNavController().navigate(R.id.action_nav_maps_to_nav_scooter_info_bottom_sheet)
+            val action = MapsFragmentDirections.actionMapsDestinationToScooterInfoBottomSheetDestination(item)
+            NavHostFragment.findNavController(this).navigate(action)
             return@setOnClusterItemClickListener false
         }
 
