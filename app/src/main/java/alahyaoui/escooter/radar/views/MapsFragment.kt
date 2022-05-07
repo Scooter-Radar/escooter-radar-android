@@ -4,7 +4,7 @@ import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
-import alahyaoui.escooter.radar.utils.MarkerInfoWindowAdapter
+import androidx.navigation.findNavController
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
@@ -13,9 +13,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,8 +25,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.ktx.addCircle
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -63,7 +65,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         initViewModelObservers()
     }
 
-    private fun initViewModelObservers(){
+    private fun initViewModelObservers() {
         mapsViewModel.nbOfScootersLiveData.observe(viewLifecycleOwner) {
             mapsViewModel.fetchScootersFromApi()
         }
@@ -74,7 +76,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             // Ensure all places are visible in the map
             val bounds = LatLngBounds.builder()
             val scooters = mapsViewModel.scootersLiveData.value
-            if(scooters?.size != 0){
+            if (scooters?.size != 0) {
                 scooters?.forEach { bounds.include(it.position) }
                 mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
             }
@@ -94,13 +96,15 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 clusterManager
             )
 
-        // Set custom info window adapter
-        clusterManager.markerCollection.setInfoWindowAdapter(MarkerInfoWindowAdapter(requireContext()))
-
         // Add the places to the ClusterManager
         val scooters = mapsViewModel.scootersLiveData.value
         clusterManager.addItems(scooters)
         clusterManager.cluster()
+
+        clusterManager.setOnClusterItemClickListener { item ->
+            findNavController().navigate(R.id.action_nav_maps_to_nav_scooter_info_bottom_sheet)
+            return@setOnClusterItemClickListener false
+        }
 
         // When the camera starts moving, change the alpha value of the marker to translucent
         mMap.setOnCameraMoveStartedListener {
@@ -164,10 +168,10 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     @SuppressLint("MissingPermission")
-    private fun onLocationEnabled(){
+    private fun onLocationEnabled() {
         mMap.isMyLocationEnabled = true
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener  { location ->
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             mapsViewModel.userLocation = location
             mapsViewModel.fetchScootersFromApi()
         }
