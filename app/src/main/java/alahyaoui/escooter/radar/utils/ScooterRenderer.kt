@@ -80,7 +80,7 @@ class ScooterRenderer(
                 "spin" -> spinIcon
                 else -> defaultIcon
             }
-        markerOptions.title(item.title)
+        markerOptions
             .position(item.position)
             .icon(scooterIcon)
     }
