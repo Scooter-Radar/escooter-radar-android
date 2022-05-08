@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="alahyaoui.escooter.radar.utils.DateUtility" />
+
         <variable
             name="scooter"
             type="alahyaoui.escooter.radar.models.Scooter" />
@@ -94,6 +96,30 @@
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     tools:text='@{String.valueOf( (int) scooter.currentRangeMeters/1000) + " km", default="Current Range Metters"}' />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/view_state"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_baseline_fact_check" />
+
+                <TextView
+                    android:id="@+id/text_view_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="State"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    tools:text='@{!scooter.reserved ? (scooter.disabled ? "Disabled" : "Available") : "Reserved", default="State"}' />
+
             </LinearLayout>
 
         </LinearLayout>
