@@ -3,6 +3,7 @@ package alahyaoui.escooter.radar.models
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Scooter(
 
@@ -29,7 +30,7 @@ data class Scooter(
 
     @Json(name = "current_range_meters")
     var currentRangeMeters: Double,
-) : ClusterItem {
+) : Serializable, ClusterItem {
     override fun getPosition(): LatLng = LatLng(location.coordinates[1], location.coordinates[0])
 
     override fun getTitle(): String = company

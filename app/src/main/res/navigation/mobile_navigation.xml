@@ -2,12 +2,28 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_maps">
+    app:startDestination="@+id/maps_destination">
 
     <fragment
-        android:id="@+id/nav_maps"
+        android:id="@+id/maps_destination"
         android:name="alahyaoui.escooter.radar.views.MapsFragment"
         android:label="@string/menu_maps"
-        tools:layout="@layout/fragment_maps" />
+        tools:layout="@layout/fragment_maps">
+        <action
+            android:id="@+id/action_maps_destination_to_scooter_info_bottom_sheet_destination"
+            app:destination="@id/scooter_info_bottom_sheet_destination" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/scooter_info_bottom_sheet_destination"
+        android:name="alahyaoui.escooter.radar.views.ScooterInfoBottomSheetFragment"
+        android:label="@string/menu_scooter_info_bottom_sheet"
+        tools:layout="@layout/scooter_info_bottom_sheet">
+        <action
+            android:id="@+id/action_scooter_info_bottom_sheet_destination_to_maps_destination"
+            app:destination="@id/maps_destination" />
+        <argument
+            android:name="scooter"
+            app:argType="alahyaoui.escooter.radar.models.Scooter" />
+    </dialog>
 </navigation>
