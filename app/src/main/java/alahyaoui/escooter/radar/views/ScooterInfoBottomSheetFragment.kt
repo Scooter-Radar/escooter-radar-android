@@ -12,6 +12,8 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: ScooterInfoBottomSheetBinding
 
+    override fun getTheme(): Int = R.style.BottomSheetDialogTheme
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
