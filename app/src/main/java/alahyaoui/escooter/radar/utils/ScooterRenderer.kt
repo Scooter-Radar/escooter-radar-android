@@ -3,13 +3,19 @@ package alahyaoui.escooter.radar.utils
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.models.Scooter
 import android.content.Context
-import androidx.core.content.ContextCompat
+import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.View
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.google.maps.android.ui.IconGenerator
+
 
 class ScooterRenderer(
     private val context: Context,
@@ -91,5 +97,24 @@ class ScooterRenderer(
      */
     override fun onClusterItemRendered(clusterItem: Scooter, marker: Marker) {
         marker.tag = clusterItem
+    }
+
+    val iconGenerator: IconGenerator = IconGenerator(context);
+
+    /**
+     * The icon to use for each cluster item
+     */
+    private val clusterIcon: Drawable by lazy {
+        context.resources.getDrawable(R.drawable.cluster_background)
+    }
+
+    override fun onBeforeClusterRendered(cluster: Cluster<Scooter>, markerOptions: MarkerOptions) {
+        iconGenerator.setBackground(clusterIcon)
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val clusterView: View = inflater.inflate(R.layout.cluster_view, null, false)
+        iconGenerator.setContentView(clusterView)
+        iconGenerator.makeIcon(cluster.size.toString())
+        val icon = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())
+        markerOptions.icon(icon)
     }
 }
