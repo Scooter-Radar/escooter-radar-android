@@ -3,6 +3,7 @@ package alahyaoui.escooter.radar.utils
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.models.Scooter
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -99,20 +100,18 @@ class ScooterRenderer(
         marker.tag = clusterItem
     }
 
-    val iconGenerator: IconGenerator = IconGenerator(context);
+    private val iconGenerator: IconGenerator
 
-    /**
-     * The icon to use for each cluster item
-     */
-    private val clusterIcon: Drawable by lazy {
-        context.resources.getDrawable(R.drawable.cluster_background)
-    }
-
-    override fun onBeforeClusterRendered(cluster: Cluster<Scooter>, markerOptions: MarkerOptions) {
+    init {
+        iconGenerator = IconGenerator(context)
+        val clusterIcon = context.resources.getDrawable(R.drawable.cluster_background, null)
         iconGenerator.setBackground(clusterIcon)
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val clusterView: View = inflater.inflate(R.layout.cluster_view, null, false)
         iconGenerator.setContentView(clusterView)
+    }
+
+    override fun onBeforeClusterRendered(cluster: Cluster<Scooter>, markerOptions: MarkerOptions) {
         iconGenerator.makeIcon(cluster.size.toString())
         val icon = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())
         markerOptions.icon(icon)
