@@ -5,8 +5,6 @@
 
     <data>
 
-        <import type="alahyaoui.escooter.radar.utils.DateUtility" />
-
         <variable
             name="scooter"
             type="alahyaoui.escooter.radar.models.Scooter" />
