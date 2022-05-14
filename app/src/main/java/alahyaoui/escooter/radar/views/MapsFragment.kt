@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,7 +27,6 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import androidx.navigation.fragment.NavHostFragment
 
-
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var binding: FragmentMapsBinding
@@ -34,6 +34,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var mapsViewModel: MapsViewModel
 
     private lateinit var mMap: GoogleMap
+
+    private lateinit var clusterManager: ClusterManager<Scooter>
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -56,8 +58,17 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
-        requestPermissions()
 
+        // Create the ClusterManager class and set the custom renderer
+        clusterManager = ClusterManager<Scooter>(requireContext(), mMap)
+        clusterManager.renderer =
+            ScooterRenderer(
+                requireContext(),
+                mMap,
+                clusterManager
+            )
+
+        requestPermissions()
         initViewModelObservers()
     }
 
@@ -83,15 +94,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
      * Adds markers to the map with clustering support.
      */
     private fun addClusteredMarkers() {
-        // Create the ClusterManager class and set the custom renderer
-        val clusterManager = ClusterManager<Scooter>(requireContext(), mMap)
-        clusterManager.renderer =
-            ScooterRenderer(
-                requireContext(),
-                mMap,
-                clusterManager
-            )
-
         // Add the places to the ClusterManager
         val scooters = mapsViewModel.scootersLiveData.value
         clusterManager.addItems(scooters)
