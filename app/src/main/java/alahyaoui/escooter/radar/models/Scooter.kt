@@ -1,10 +1,12 @@
 package alahyaoui.escooter.radar.models
 
+import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.squareup.moshi.Json
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Scooter(
 
     @Json(name = "bike_id")
@@ -30,7 +32,7 @@ data class Scooter(
 
     @Json(name = "current_range_meters")
     var currentRangeMeters: Double,
-) : Serializable, ClusterItem {
+) : Parcelable, ClusterItem {
     override fun getPosition(): LatLng = LatLng(location.coordinates[1], location.coordinates[0])
 
     override fun getTitle(): String = company
