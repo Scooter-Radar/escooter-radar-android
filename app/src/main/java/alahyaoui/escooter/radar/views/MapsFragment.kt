@@ -31,7 +31,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var binding: FragmentMapsBinding
 
-    private lateinit var mapsViewModel: MapsViewModel
+    private val mapsViewModel by viewModels<MapsViewModel>()
 
     private lateinit var mMap: GoogleMap
 
@@ -40,9 +40,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // Get a reference to the ViewModel associated with this fragment.
-        mapsViewModel = ViewModelProvider(this)[MapsViewModel::class.java]
-
         binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
