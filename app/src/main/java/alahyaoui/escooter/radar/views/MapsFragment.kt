@@ -1,6 +1,5 @@
 package alahyaoui.escooter.radar.views
 
-import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
@@ -13,7 +12,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,21 +25,19 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import androidx.navigation.fragment.NavHostFragment
 
-
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var binding: FragmentMapsBinding
 
-    private lateinit var mapsViewModel: MapsViewModel
+    private val mapsViewModel by viewModels<MapsViewModel>()
 
     private lateinit var mMap: GoogleMap
+
+    private lateinit var clusterManager: ClusterManager<Scooter>
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // Get a reference to the ViewModel associated with this fragment.
-        mapsViewModel = ViewModelProvider(this)[MapsViewModel::class.java]
-
         binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,15 +46,24 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        val mapFragment = binding.mapView.getFragment<SupportMapFragment>()
+        mapFragment.getMapAsync(callback)
     }
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
-        requestPermissions()
 
+        // Create the ClusterManager class and set the custom renderer
+        clusterManager = ClusterManager<Scooter>(requireContext(), mMap)
+        clusterManager.renderer =
+            ScooterRenderer(
+                requireContext(),
+                mMap,
+                clusterManager
+            )
+
+        requestPermissions()
         initViewModelObservers()
     }
 
@@ -83,15 +89,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
      * Adds markers to the map with clustering support.
      */
     private fun addClusteredMarkers() {
-        // Create the ClusterManager class and set the custom renderer
-        val clusterManager = ClusterManager<Scooter>(requireContext(), mMap)
-        clusterManager.renderer =
-            ScooterRenderer(
-                requireContext(),
-                mMap,
-                clusterManager
-            )
-
         // Add the places to the ClusterManager
         val scooters = mapsViewModel.scootersLiveData.value
         clusterManager.addItems(scooters)

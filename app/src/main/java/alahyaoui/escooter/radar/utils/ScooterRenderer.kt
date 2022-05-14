@@ -3,8 +3,6 @@ package alahyaoui.escooter.radar.utils
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.models.Scooter
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.gms.maps.GoogleMap
@@ -23,6 +21,30 @@ class ScooterRenderer(
     map: GoogleMap,
     clusterManager: ClusterManager<Scooter>
 ) : DefaultClusterRenderer<Scooter>(context, map, clusterManager) {
+
+    private val iconGenerator: IconGenerator
+
+    init {
+        iconGenerator = IconGenerator(context)
+        val clusterIcon = context.resources.getDrawable(R.drawable.cluster_background, null)
+        iconGenerator.setBackground(clusterIcon)
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val clusterView: View = inflater.inflate(R.layout.cluster_view, null, false)
+        iconGenerator.setContentView(clusterView)
+    }
+
+    override fun onBeforeClusterRendered(cluster: Cluster<Scooter>, markerOptions: MarkerOptions) {
+        iconGenerator.makeIcon(cluster.size.toString())
+        val icon = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())
+        markerOptions.icon(icon)
+    }
+
+    override fun onClusterUpdated(cluster: Cluster<Scooter>, marker: Marker) {
+        super.onClusterUpdated(cluster, marker)
+        iconGenerator.makeIcon(cluster.size.toString())
+        val icon = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())
+        marker.setIcon(icon)
+    }
 
     /**
      * The icon to use for lime e-scooter cluster item
@@ -92,28 +114,17 @@ class ScooterRenderer(
             .icon(scooterIcon)
     }
 
-    /**
-     * Method called right after the cluster item (i.e. the marker) is rendered. This is where
-     * properties for the Marker object should be set.
-     */
-    override fun onClusterItemRendered(clusterItem: Scooter, marker: Marker) {
-        marker.tag = clusterItem
-    }
-
-    private val iconGenerator: IconGenerator
-
-    init {
-        iconGenerator = IconGenerator(context)
-        val clusterIcon = context.resources.getDrawable(R.drawable.cluster_background, null)
-        iconGenerator.setBackground(clusterIcon)
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val clusterView: View = inflater.inflate(R.layout.cluster_view, null, false)
-        iconGenerator.setContentView(clusterView)
-    }
-
-    override fun onBeforeClusterRendered(cluster: Cluster<Scooter>, markerOptions: MarkerOptions) {
-        iconGenerator.makeIcon(cluster.size.toString())
-        val icon = BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())
-        markerOptions.icon(icon)
+    override fun onClusterItemUpdated(item: Scooter, marker: Marker) {
+        super.onClusterItemUpdated(item, marker)
+        val scooterIcon: BitmapDescriptor =
+            when (item.company.lowercase()) {
+                "lime" -> limeIcon
+                "bird" -> birdIcon
+                "pony" -> ponyIcon
+                "spin" -> spinIcon
+                else -> defaultIcon
+            }
+        marker.position = item.position
+        marker.setIcon(scooterIcon)
     }
 }
