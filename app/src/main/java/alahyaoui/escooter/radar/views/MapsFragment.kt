@@ -48,8 +48,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        val mapFragment = binding.mapView.getFragment<SupportMapFragment>()
+        mapFragment.getMapAsync(callback)
     }
 
     @SuppressLint("MissingPermission")
