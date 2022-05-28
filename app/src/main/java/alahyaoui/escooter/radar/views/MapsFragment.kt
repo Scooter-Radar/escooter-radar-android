@@ -6,10 +6,15 @@ import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.*
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,13 +36,17 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private val mapsViewModel by viewModels<MapsViewModel>()
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var map: GoogleMap
 
     private lateinit var clusterManager: ClusterManager<Scooter>
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -52,19 +61,20 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
-        mMap = googleMap
+        map = googleMap
 
         // Create the ClusterManager class and set the custom renderer
-        clusterManager = ClusterManager<Scooter>(requireContext(), mMap)
+        clusterManager = ClusterManager<Scooter>(requireContext(), map)
         clusterManager.renderer =
             ScooterRenderer(
                 requireContext(),
-                mMap,
+                map,
                 clusterManager
             )
 
         requestPermissions()
         initViewModelObservers()
+        initMapTypeFab()
     }
 
     private fun initViewModelObservers() {
@@ -80,7 +90,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             val scooters = mapsViewModel.scootersLiveData.value
             if (scooters?.size != 0) {
                 scooters?.forEach { bounds.include(it.position) }
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
             }
         }
     }
@@ -95,18 +105,19 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         clusterManager.cluster()
 
         clusterManager.setOnClusterItemClickListener { item ->
-            val action = MapsFragmentDirections.actionMapsDestinationToScooterInfoBottomSheetDestination(item)
+            val action =
+                MapsFragmentDirections.actionMapsDestinationToScooterInfoBottomSheetDestination(item)
             NavHostFragment.findNavController(this).navigate(action)
             return@setOnClusterItemClickListener false
         }
 
         // When the camera starts moving, change the alpha value of the marker to translucent
-        mMap.setOnCameraMoveStartedListener {
+        map.setOnCameraMoveStartedListener {
             clusterManager.markerCollection.markers.forEach { it.alpha = 0.3f }
             clusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 0.3f }
         }
 
-        mMap.setOnCameraIdleListener {
+        map.setOnCameraIdleListener {
             // When the camera stops moving, change the alpha value back to opaque
             clusterManager.markerCollection.markers.forEach { it.alpha = 1.0f }
             clusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 1.0f }
@@ -114,6 +125,131 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             // Call clusterManager.onCameraIdle() when the camera stops moving so that re-clustering
             // can be performed when the camera stops moving
             clusterManager.onCameraIdle()
+        }
+    }
+
+    // Map Type Fab Initialization
+
+    private fun initMapTypeFab() {
+        val mapTypeDefaultBackground = binding.mapTypeSelectionView.mapTypeDefaultBackground
+        val mapTypeDefaultText = binding.mapTypeSelectionView.mapTypeDefaultText
+
+        val mapTypeSatelliteBackground = binding.mapTypeSelectionView.mapTypeSatelliteBackground
+        val mapTypeSatelliteText = binding.mapTypeSelectionView.mapTypeSatelliteText
+
+        val mapTypeTerrainBackground = binding.mapTypeSelectionView.mapTypeTerrainBackground
+        val mapTypeTerrainText = binding.mapTypeSelectionView.mapTypeTerrainText
+
+        // When map is initially loaded, determine which map type option to 'select'
+        when (map.mapType) {
+            GoogleMap.MAP_TYPE_SATELLITE -> {
+                mapTypeSatelliteBackground.visibility = View.VISIBLE
+                mapTypeSatelliteText.setTextColor(Color.BLUE)
+            }
+            GoogleMap.MAP_TYPE_TERRAIN -> {
+                mapTypeTerrainBackground.visibility = View.VISIBLE
+                mapTypeTerrainText.setTextColor(Color.BLUE)
+            }
+            else -> {
+                mapTypeDefaultBackground.visibility = View.VISIBLE
+                mapTypeDefaultText.setTextColor(Color.BLUE)
+            }
+        }
+
+        // Handle selection of the Default map type
+        binding.mapTypeSelectionView.mapTypeDefault.setOnClickListener {
+            mapTypeDefaultBackground.visibility = View.VISIBLE
+            mapTypeSatelliteBackground.visibility = View.INVISIBLE
+            mapTypeTerrainBackground.visibility = View.INVISIBLE
+            mapTypeDefaultText.setTextColor(Color.BLUE)
+            mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
+            mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+
+        // Handle selection of the Satellite map type
+        binding.mapTypeSelectionView.mapTypeSatellite.setOnClickListener {
+            mapTypeDefaultBackground.visibility = View.INVISIBLE
+            mapTypeSatelliteBackground.visibility = View.VISIBLE
+            mapTypeTerrainBackground.visibility = View.INVISIBLE
+            mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
+            mapTypeSatelliteText.setTextColor(Color.BLUE)
+            mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        }
+
+        // Handle selection of the terrain map type
+        binding.mapTypeSelectionView.mapTypeTerrain.setOnClickListener {
+            mapTypeDefaultBackground.visibility = View.INVISIBLE
+            mapTypeSatelliteBackground.visibility = View.INVISIBLE
+            mapTypeTerrainBackground.visibility = View.VISIBLE
+            mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
+            mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
+            mapTypeTerrainText.setTextColor(Color.BLUE)
+            map.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        }
+
+        // Set click listener on FAB to open the map type selection view
+        val mapTypeFAB = binding.mapTypeFAB
+        mapTypeFAB.setOnClickListener {
+
+            // Start animator to reveal the selection view, starting from the FAB itself
+            val mapTypeSelection = binding.mapTypeSelectionView.mapTypeSelection
+            val anim = ViewAnimationUtils.createCircularReveal(
+                mapTypeSelection,
+                mapTypeSelection.width - (mapTypeFAB.width / 2),
+                mapTypeFAB.height / 2,
+                mapTypeFAB.width / 2f,
+                mapTypeSelection.width.toFloat()
+            )
+            anim.duration = 200
+            anim.interpolator = AccelerateDecelerateInterpolator()
+
+            anim.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    mapTypeSelection.visibility = View.VISIBLE
+                }
+            })
+
+            anim.start()
+            mapTypeFAB.visibility = View.INVISIBLE
+
+        }
+
+        // Set click listener on the map to close the map type selection view
+        map.setOnMapClickListener {
+
+            // Conduct the animation if the FAB is invisible (window open)
+            if (mapTypeFAB.visibility == View.INVISIBLE) {
+
+                // Start animator close and finish at the FAB position
+                val mapTypeSelection = binding.mapTypeSelectionView.mapTypeSelection
+                val anim = ViewAnimationUtils.createCircularReveal(
+                    mapTypeSelection,
+                    mapTypeSelection.width - (mapTypeFAB.width / 2),
+                    mapTypeFAB.height / 2,
+                    mapTypeSelection.width.toFloat(),
+                    mapTypeFAB.width / 2f
+                )
+                anim.duration = 200
+                anim.interpolator = AccelerateDecelerateInterpolator()
+
+                anim.addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                        mapTypeSelection.visibility = View.INVISIBLE
+                    }
+                })
+
+                // Set a delay to reveal the FAB. Looks better than revealing at end of animation
+                Handler().postDelayed({
+                    kotlin.run {
+                        mapTypeFAB.visibility = View.VISIBLE
+                    }
+                }, 100)
+                anim.start()
+            }
         }
     }
 
@@ -131,7 +267,11 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
@@ -163,14 +303,15 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     @SuppressLint("MissingPermission")
     private fun onLocationEnabled() {
-        mMap.isMyLocationEnabled = true
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        map.isMyLocationEnabled = true
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             mapsViewModel.userLocation = location
             mapsViewModel.fetchScootersFromApi()
         }
 
-        mMap.setOnMyLocationChangeListener { location ->
+        map.setOnMyLocationChangeListener { location ->
             mapsViewModel.userLocation = location
         }
     }

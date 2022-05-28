@@ -12,6 +12,32 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".views.MapsFragment" />
+        tools:context=".views.MapsFragment"
+        tools:layout_editor_absoluteX="122dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/map_type_FAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="6dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="#FFF"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/map_view"
+        app:rippleColor="#eff5ff"
+        app:srcCompat="@drawable/ic_map_layers" />
+
+
+    <include
+        android:id="@+id/map_type_selection_view"
+        layout="@layout/map_type_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/map_type_FAB"
+        app:layout_constraintTop_toTopOf="@+id/map_type_FAB" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
