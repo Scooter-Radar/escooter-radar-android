@@ -26,4 +26,11 @@
             android:name="scooter"
             app:argType="alahyaoui.escooter.radar.models.Scooter" />
     </dialog>
+
+    <fragment
+        android:id="@+id/settings_destination"
+        android:name="alahyaoui.escooter.radar.views.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/settings_view">
+    </fragment>
 </navigation>
