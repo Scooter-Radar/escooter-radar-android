@@ -17,4 +17,19 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:icon="@drawable/ic_menu_map"
+        android:title="Map">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/pref_map_type_text"
+            android:entries="@array/pref_map_type_entries"
+            android:entryValues="@array/pref_map_type_values"
+            android:key="@string/pref_map_type_key"
+            android:title="@string/pref_map_type_text"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

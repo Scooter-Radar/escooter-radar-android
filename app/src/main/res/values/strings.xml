@@ -22,6 +22,8 @@
     <string name="menu_settings">Settings</string>
 
     <!-- Settings -->
+
+    <!-- Scooters Settings -->
     <string name="pref_scooter_number_text">Number of e-scooters to display</string>
     <string name="pref_scooter_number_key">nb_of_scooters</string>
 
@@ -39,5 +41,21 @@
         <item>50</item>
         <item>80</item>
         <item>100</item>
+    </string-array>
+
+    <!-- Map Settings -->
+    <string name="pref_map_type_text">Map Type</string>
+    <string name="pref_map_type_key">map_type</string>
+
+    <string-array name="pref_map_type_entries">
+        <item>Default Map</item>
+        <item>Satellite Map</item>
+        <item>Terrain Map</item>
+    </string-array>
+
+    <string-array name="pref_map_type_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 </resources>
