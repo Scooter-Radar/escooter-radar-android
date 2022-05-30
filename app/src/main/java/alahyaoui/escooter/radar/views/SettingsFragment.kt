@@ -1,24 +1,11 @@
 package alahyaoui.escooter.radar.views
 
-import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
-import alahyaoui.escooter.radar.databinding.SettingsViewBinding
+import alahyaoui.escooter.radar.R
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceFragmentCompat
 
-class SettingsFragment: Fragment() {
-
-    private lateinit var binding: SettingsViewBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = SettingsViewBinding.inflate(inflater, container, false)
-        return binding.root
+class SettingsFragment : PreferenceFragmentCompat() {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.preferences, rootKey)
     }
-
 }

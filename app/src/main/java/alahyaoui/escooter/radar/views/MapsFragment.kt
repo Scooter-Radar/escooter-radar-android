@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -51,6 +52,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMapsBinding.inflate(inflater, container, false)
+        val sp = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        mapsViewModel.nbOfScooters = Integer.parseInt(sp.getString("nb_of_scooters", "100"))
         return binding.root
     }
 
@@ -81,10 +84,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initViewModelObservers() {
-        mapsViewModel.nbOfScootersLiveData.observe(viewLifecycleOwner) {
-            mapsViewModel.fetchScootersFromApi()
-        }
-
         mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) {
             addClusteredMarkers()
 
