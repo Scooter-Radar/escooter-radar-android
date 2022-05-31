@@ -62,6 +62,9 @@ dependencies {
     // Google Maps SDK for Android Utility Library KTX Library
     implementation 'com.google.maps.android:maps-utils-ktx:3.0.0'
 
+    // Preference dependencies
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+
     // DataBinding dependencies
     implementation 'androidx.databinding:databinding-common:7.2.1'
 

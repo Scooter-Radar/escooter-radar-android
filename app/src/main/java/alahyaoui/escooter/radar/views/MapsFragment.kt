@@ -9,6 +9,7 @@ import alahyaoui.escooter.radar.viewmodels.MapsViewModel
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -39,11 +41,14 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private val mapsViewModel by viewModels<MapsViewModel>()
 
+    /* Map attributes */
     private lateinit var map: GoogleMap
-
     private lateinit var clusterManager: ClusterManager<Scooter>
-
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    /* Preference attributes */
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +63,13 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Shared Preferences initialization
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        editor = sharedPreferences.edit()
+        mapsViewModel.nbOfScooters =
+            Integer.parseInt(sharedPreferences.getString("nb_of_scooters", "100"))
+
+        // Map initialization
         val mapFragment = binding.mapView.getFragment<SupportMapFragment>()
         mapFragment.getMapAsync(callback)
     }
@@ -68,33 +80,22 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         // Create the ClusterManager class and set the custom renderer
         clusterManager = ClusterManager<Scooter>(requireContext(), map)
-        clusterManager.renderer =
-            ScooterRenderer(
-                requireContext(),
-                map,
-                clusterManager
-            )
+        clusterManager.renderer = ScooterRenderer(requireContext(), map, clusterManager)
 
         requestPermissions()
         initViewModelObservers()
+        initMapType()
         initMapTypeFab()
     }
 
     private fun initViewModelObservers() {
-        mapsViewModel.nbOfScootersLiveData.observe(viewLifecycleOwner) {
-            mapsViewModel.fetchScootersFromApi()
-        }
-
-        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) {
+        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) { scooters ->
             addClusteredMarkers()
 
             // Ensure all places are visible in the map
             val bounds = LatLngBounds.builder()
-            val scooters = mapsViewModel.scootersLiveData.value
-            if (scooters?.size != 0) {
-                scooters?.forEach { bounds.include(it.position) }
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
-            }
+            scooters.forEach { bounds.include(it.position) }
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
         }
     }
 
@@ -131,67 +132,70 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    // Map Type Fab Initialization
+    // Map Type Initialization
+
+    fun initMapType() {
+        map.mapType = Integer.parseInt(sharedPreferences.getString("map_type", "1"))
+
+        binding.mapTypeSelectionView.apply {
+            // When map is initially loaded, determine which map type option to 'select'
+            when (map.mapType) {
+                GoogleMap.MAP_TYPE_SATELLITE -> {
+                    mapTypeSatelliteBackground.visibility = View.VISIBLE
+                    mapTypeSatelliteText.setTextColor(Color.BLUE)
+                }
+                GoogleMap.MAP_TYPE_TERRAIN -> {
+                    mapTypeTerrainBackground.visibility = View.VISIBLE
+                    mapTypeTerrainText.setTextColor(Color.BLUE)
+                }
+                else -> {
+                    mapTypeDefaultBackground.visibility = View.VISIBLE
+                    mapTypeDefaultText.setTextColor(Color.BLUE)
+                }
+            }
+
+            // Handle selection of the Default map type
+            binding.mapTypeSelectionView.mapTypeDefault.setOnClickListener {
+                mapTypeDefaultBackground.visibility = View.VISIBLE
+                mapTypeSatelliteBackground.visibility = View.INVISIBLE
+                mapTypeTerrainBackground.visibility = View.INVISIBLE
+                mapTypeDefaultText.setTextColor(Color.BLUE)
+                mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
+                mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
+                updateMapType(GoogleMap.MAP_TYPE_NORMAL)
+            }
+
+            // Handle selection of the Satellite map type
+            binding.mapTypeSelectionView.mapTypeSatellite.setOnClickListener {
+                mapTypeDefaultBackground.visibility = View.INVISIBLE
+                mapTypeSatelliteBackground.visibility = View.VISIBLE
+                mapTypeTerrainBackground.visibility = View.INVISIBLE
+                mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
+                mapTypeSatelliteText.setTextColor(Color.BLUE)
+                mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
+                updateMapType(GoogleMap.MAP_TYPE_SATELLITE)
+            }
+
+            // Handle selection of the terrain map type
+            binding.mapTypeSelectionView.mapTypeTerrain.setOnClickListener {
+                mapTypeDefaultBackground.visibility = View.INVISIBLE
+                mapTypeSatelliteBackground.visibility = View.INVISIBLE
+                mapTypeTerrainBackground.visibility = View.VISIBLE
+                mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
+                mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
+                mapTypeTerrainText.setTextColor(Color.BLUE)
+                updateMapType(GoogleMap.MAP_TYPE_TERRAIN)
+            }
+        }
+    }
+
+    fun updateMapType(mapType: Int) {
+        map.mapType = mapType
+        editor.putString("map_type", "${mapType}")
+        editor.apply()
+    }
 
     private fun initMapTypeFab() {
-        val mapTypeDefaultBackground = binding.mapTypeSelectionView.mapTypeDefaultBackground
-        val mapTypeDefaultText = binding.mapTypeSelectionView.mapTypeDefaultText
-
-        val mapTypeSatelliteBackground = binding.mapTypeSelectionView.mapTypeSatelliteBackground
-        val mapTypeSatelliteText = binding.mapTypeSelectionView.mapTypeSatelliteText
-
-        val mapTypeTerrainBackground = binding.mapTypeSelectionView.mapTypeTerrainBackground
-        val mapTypeTerrainText = binding.mapTypeSelectionView.mapTypeTerrainText
-
-        // When map is initially loaded, determine which map type option to 'select'
-        when (map.mapType) {
-            GoogleMap.MAP_TYPE_SATELLITE -> {
-                mapTypeSatelliteBackground.visibility = View.VISIBLE
-                mapTypeSatelliteText.setTextColor(Color.BLUE)
-            }
-            GoogleMap.MAP_TYPE_TERRAIN -> {
-                mapTypeTerrainBackground.visibility = View.VISIBLE
-                mapTypeTerrainText.setTextColor(Color.BLUE)
-            }
-            else -> {
-                mapTypeDefaultBackground.visibility = View.VISIBLE
-                mapTypeDefaultText.setTextColor(Color.BLUE)
-            }
-        }
-
-        // Handle selection of the Default map type
-        binding.mapTypeSelectionView.mapTypeDefault.setOnClickListener {
-            mapTypeDefaultBackground.visibility = View.VISIBLE
-            mapTypeSatelliteBackground.visibility = View.INVISIBLE
-            mapTypeTerrainBackground.visibility = View.INVISIBLE
-            mapTypeDefaultText.setTextColor(Color.BLUE)
-            mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
-            mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
-            map.mapType = GoogleMap.MAP_TYPE_NORMAL
-        }
-
-        // Handle selection of the Satellite map type
-        binding.mapTypeSelectionView.mapTypeSatellite.setOnClickListener {
-            mapTypeDefaultBackground.visibility = View.INVISIBLE
-            mapTypeSatelliteBackground.visibility = View.VISIBLE
-            mapTypeTerrainBackground.visibility = View.INVISIBLE
-            mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
-            mapTypeSatelliteText.setTextColor(Color.BLUE)
-            mapTypeTerrainText.setTextColor(Color.parseColor("#808080"))
-            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
-        }
-
-        // Handle selection of the terrain map type
-        binding.mapTypeSelectionView.mapTypeTerrain.setOnClickListener {
-            mapTypeDefaultBackground.visibility = View.INVISIBLE
-            mapTypeSatelliteBackground.visibility = View.INVISIBLE
-            mapTypeTerrainBackground.visibility = View.VISIBLE
-            mapTypeDefaultText.setTextColor(Color.parseColor("#808080"))
-            mapTypeSatelliteText.setTextColor(Color.parseColor("#808080"))
-            mapTypeTerrainText.setTextColor(Color.BLUE)
-            map.mapType = GoogleMap.MAP_TYPE_TERRAIN
-        }
-
         // Set click listener on FAB to open the map type selection view
         val mapTypeFAB = binding.mapTypeFAB
         mapTypeFAB.setOnClickListener {
