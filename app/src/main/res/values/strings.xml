@@ -11,17 +11,19 @@
     <string name="action_settings">Settings</string>
 
     <!-- Map -->
-    <string name="menu_maps">Maps</string>
     <string name="menu_scooter_info_bottom_sheet">Scooter Info Bottom Sheet</string>
-    <string name="terrain_map">Terrain Map</string>
     <string name="map_type">Map Type</string>
     <string name="map_type_default_text">Default</string>
     <string name="map_type_satellite_text">Satellite</string>
     <string name="map_type_terrain_text">Terrain</string>
     <string name="map_type_fab">Map Type FAB</string>
+
+    <!-- Navigation Drawer -->
+    <string name="menu_maps">Maps</string>
     <string name="menu_settings">Settings</string>
 
     <!-- Settings -->
+    <string name="preferences_title">Settings</string>
 
     <!-- Scooters Settings -->
     <string name="pref_scooter_number_text">Number of e-scooters to display</string>
