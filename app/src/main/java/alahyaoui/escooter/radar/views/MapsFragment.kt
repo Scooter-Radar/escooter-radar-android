@@ -30,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.ClusterManager
 import pub.devrel.easypermissions.AppSettingsDialog
@@ -84,8 +85,9 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         requestPermissions()
         initViewModelObservers()
-        initMapType()
+        initLocationFab()
         initMapTypeFab()
+        initMapType()
     }
 
     private fun initViewModelObservers() {
@@ -129,6 +131,17 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             // Call clusterManager.onCameraIdle() when the camera stops moving so that re-clustering
             // can be performed when the camera stops moving
             clusterManager.onCameraIdle()
+        }
+    }
+
+    private fun initLocationFab() {
+        map.uiSettings.isMyLocationButtonEnabled = false
+        binding.mapLocationFAB.setOnClickListener {
+            val location = mapsViewModel.userLocation
+            if (location != null) {
+                val userLatLng = LatLng(location.latitude, location.longitude)
+                map.animateCamera(CameraUpdateFactory.newLatLng(userLatLng))
+            }
         }
     }
 
