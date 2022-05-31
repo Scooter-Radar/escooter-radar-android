@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:icon="@drawable/ic_baseline_electric_scooter"
+        android:icon="@drawable/ic_settings_electric_scooter"
         android:title="Scooters">
 
         <ListPreference
@@ -18,7 +18,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:icon="@drawable/ic_menu_map"
+        android:icon="@drawable/ic_settings_map"
         android:title="Map">
 
         <ListPreference
