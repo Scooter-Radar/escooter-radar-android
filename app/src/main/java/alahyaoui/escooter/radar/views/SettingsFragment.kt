@@ -26,12 +26,14 @@ class SettingsFragment : Fragment() {
 
         binding.preferencesView
 
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.preferences_view,
-                PreferenceFragment()
-            )
-            .commit()
+        if (savedInstanceState == null) {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.preferences_view,
+                    PreferenceFragment()
+                )
+                .commit()
+        }
     }
 }
