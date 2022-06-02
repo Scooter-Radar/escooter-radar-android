@@ -48,13 +48,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
+                        android:contentDescription="@string/company_content_description"
                         android:src="@drawable/ic_baseline_electric_scooter" />
 
                     <TextView
                         android:id="@+id/text_view_company"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="Title"
+                        android:contentDescription="@string/company_content_description"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -72,13 +73,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_location_city" />
+                        android:src="@drawable/ic_baseline_location_city"
+                        android:contentDescription="@string/city_content_description" />
 
                     <TextView
                         android:id="@+id/text_view_city"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="City"
+                        android:contentDescription="@string/city_content_description"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
                         tools:text='@{scooter.city.toUpperCase(), default="City"}' />
@@ -96,13 +98,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_battery" />
+                        android:src="@drawable/ic_baseline_battery"
+                        android:contentDescription="@string/current_range_meters_content_description" />
 
                     <TextView
                         android:id="@+id/text_view_current_range_meters"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="Current range meters"
+                        android:contentDescription="@string/current_range_meters_content_description"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
                         tools:text='@{String.valueOf( (int) scooter.currentRangeMeters/1000) + " km", default="Current Range Metters"}' />
@@ -119,13 +122,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_fact_check" />
+                        android:src="@drawable/ic_baseline_fact_check"
+                        android:contentDescription="@string/state_content_description"/>
 
                     <TextView
                         android:id="@+id/text_view_state"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="State"
+                        android:contentDescription="@string/state_content_description"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
                         tools:text='@{!scooter.reserved ? (scooter.disabled ? "Disabled" : "Available") : "Reserved", default="State"}' />
@@ -138,7 +142,8 @@
                 android:id="@+id/image_escooter"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/ic_lime_escooter" />
+                android:src="@drawable/ic_lime_escooter"
+                android:contentDescription="@string/escooter_image_content_description"/>
 
         </LinearLayout>
 

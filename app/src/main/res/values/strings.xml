@@ -18,6 +18,14 @@
     <string name="map_type_terrain_text">Terrain</string>
     <string name="map_type_fab">Map Type FAB</string>
 
+    <!-- Scooter Bottom Sheet-->
+    <string name="city_content_description">City</string>
+    <string name="company_content_description">Title</string>
+    <string name="current_range_meters_content_description">Current range meters</string>
+    <string name="state_content_description">State</string>
+    <string name="escooter_image_content_description">E-scooter Image</string>
+    <string name="direction_button_text">Go To</string>
+
     <!-- Navigation Drawer -->
     <string name="menu_maps">Maps</string>
     <string name="menu_settings">Settings</string>
