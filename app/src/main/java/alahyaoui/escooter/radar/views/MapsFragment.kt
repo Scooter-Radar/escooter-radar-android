@@ -3,14 +3,19 @@ package alahyaoui.escooter.radar.views
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import alahyaoui.escooter.radar.utils.MapsApiUtls
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.location.Location
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -36,6 +41,7 @@ import com.google.maps.android.clustering.ClusterManager
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
+
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var binding: FragmentMapsBinding
@@ -46,6 +52,10 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var map: GoogleMap
     private lateinit var clusterManager: ClusterManager<Scooter>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    // Google Map direction attributes
+    private lateinit var destination: Location
+
 
     /* Preference attributes */
     private lateinit var sharedPreferences: SharedPreferences
@@ -71,6 +81,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Integer.parseInt(sharedPreferences.getString("nb_of_scooters", "100"))
 
         // Map initialization
+        destination = Location(LocationManager.GPS_PROVIDER)
         val mapFragment = binding.mapView.getFragment<SupportMapFragment>()
         mapFragment.getMapAsync(callback)
     }
@@ -78,6 +89,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
+        map.uiSettings.isMapToolbarEnabled = false
 
         // Create the ClusterManager class and set the custom renderer
         clusterManager = ClusterManager<Scooter>(requireContext(), map)
@@ -88,6 +100,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         initLocationFab()
         initMapTypeFab()
         initMapType()
+        initDirectionFab()
     }
 
     private fun initViewModelObservers() {
@@ -114,6 +127,10 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             val action =
                 MapsFragmentDirections.actionMapsDestinationToScooterInfoBottomSheetDestination(item)
             NavHostFragment.findNavController(this).navigate(action)
+
+            destination.latitude = item.location.coordinates[1]
+            destination.longitude = item.location.coordinates[0]
+            initDirectionFab()
             return@setOnClusterItemClickListener false
         }
 
@@ -131,6 +148,27 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             // Call clusterManager.onCameraIdle() when the camera stops moving so that re-clustering
             // can be performed when the camera stops moving
             clusterManager.onCameraIdle()
+        }
+    }
+
+    private fun initDirectionFab() {
+        var path = "${MapsApiUtls.directionBaseUrl}/?api=1"
+        val origin = mapsViewModel.userLocation
+
+        if (origin != null) {
+            path += "&origin=${origin.latitude},${origin.longitude}"
+        }
+
+        if (destination.latitude != 0.0 && destination.longitude != 0.0) {
+            path += "&destination=${destination?.latitude},${destination?.longitude}"
+        }
+
+        binding.directionFAB.setOnClickListener {
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(path)
+            )
+            startActivity(intent)
         }
     }
 
