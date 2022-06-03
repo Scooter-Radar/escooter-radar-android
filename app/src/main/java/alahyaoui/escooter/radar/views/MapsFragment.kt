@@ -3,7 +3,7 @@ package alahyaoui.escooter.radar.views
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
-import alahyaoui.escooter.radar.utils.MapsApiUtls
+import alahyaoui.escooter.radar.utils.MapsApiUrls
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
@@ -147,7 +147,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun initDirectionFab() {
         map.uiSettings.isMapToolbarEnabled = false
         binding.directionFAB.setOnClickListener {
-            var path = "${MapsApiUtls.directionBaseUrl}/?api=1"
+            var path = "${MapsApiUrls.directionBaseUrl}/?api=1"
             val origin = mapsViewModel.origin
             val destination = mapsViewModel.destination
 
