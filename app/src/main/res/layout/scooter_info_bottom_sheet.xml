@@ -24,7 +24,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -73,8 +73,8 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_location_city"
-                        android:contentDescription="@string/city_desc" />
+                        android:contentDescription="@string/city_desc"
+                        android:src="@drawable/ic_baseline_location_city" />
 
                     <TextView
                         android:id="@+id/text_view_city"
@@ -98,8 +98,8 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_battery"
-                        android:contentDescription="@string/current_range_meters_desc" />
+                        android:contentDescription="@string/current_range_meters_desc"
+                        android:src="@drawable/ic_baseline_battery" />
 
                     <TextView
                         android:id="@+id/text_view_current_range_meters"
@@ -122,8 +122,8 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_baseline_fact_check"
-                        android:contentDescription="@string/state_desc"/>
+                        android:contentDescription="@string/state_desc"
+                        android:src="@drawable/ic_baseline_fact_check" />
 
                     <TextView
                         android:id="@+id/text_view_state"
@@ -136,33 +136,46 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/action_buttons"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/button_go_to"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_baseline_directions"
-                        android:text="@string/direction_button_text"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"/>
-
-                </LinearLayout>
-
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/image_escooter"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/ic_lime_escooter"
-                android:contentDescription="@string/escooter_image_desc"/>
+                android:contentDescription="@string/escooter_image_desc"
+                android:src="@drawable/ic_lime_escooter" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/action_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_rent"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_baseline_book_online"
+                android:text="@string/rent_button_text"
+                android:textColor="@color/black"
+                android:layout_marginEnd="15dp"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/button_go_to"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_baseline_directions"
+                android:text="@string/direction_button_text"
+                android:layout_marginStart="15dp"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

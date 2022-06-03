@@ -2,7 +2,8 @@ package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetBinding
-import alahyaoui.escooter.radar.utils.MapsApiUtls.directionBaseUrl
+import alahyaoui.escooter.radar.utils.MapsApiUrls.directionBaseUrl
+import alahyaoui.escooter.radar.utils.ScooterApplicationUrls
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -29,6 +30,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         if(binding.scooter != null){
             initCompanyImage()
             initScooterImage()
+            initRentButton()
             initDirectionButton()
         }
 
@@ -59,6 +61,25 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
             }
 
         binding.imageEscooter.setImageResource(image)
+    }
+
+    fun initRentButton(){
+        val url =
+            when (binding.scooter?.company?.lowercase()) {
+                "lime" -> ScooterApplicationUrls.limeUrl
+                "bird" -> ScooterApplicationUrls.birdUrl
+                "pony" -> ScooterApplicationUrls.ponyUrl
+                "spin" -> ScooterApplicationUrls.spinUrl
+                else -> ""
+            }
+
+        binding.buttonRent.setOnClickListener {
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(url)
+            )
+            startActivity(intent)
+        }
     }
 
     fun initDirectionButton(){

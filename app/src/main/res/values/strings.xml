@@ -29,6 +29,7 @@
     <string name="scooter_cluster_image_desc">Scooter Cluster Image</string>
 
     <!-- Scooter Bottom Sheet-->
+    <string name="rent_button_text">Rent</string>
     <string name="direction_button_text">Go To</string>
 
     <string name="city_desc">City</string>
