@@ -363,9 +363,5 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             mapsViewModel.origin = location
             mapsViewModel.fetchScootersFromApi()
         }
-
-        map.setOnMyLocationChangeListener { location ->
-            mapsViewModel.origin = location
-        }
     }
 }
