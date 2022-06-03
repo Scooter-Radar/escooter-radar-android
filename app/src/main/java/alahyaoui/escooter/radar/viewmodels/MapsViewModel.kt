@@ -3,6 +3,7 @@ package alahyaoui.escooter.radar.viewmodels
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.models.ScooterApi
 import android.location.Location
+import android.location.LocationManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,22 +17,23 @@ class MapsViewModel : ViewModel() {
 
     val scootersLiveData: LiveData<List<Scooter>> = _scootersLiveData
 
-    var nbOfScooters : Int
+    var nbOfScooters: Int
 
     /* Maps state */
-
-    var userLocation : Location? = null
+    var origin: Location
+    var destination: Location
 
     init {
+        origin = Location(LocationManager.GPS_PROVIDER)
+        destination = Location(LocationManager.GPS_PROVIDER)
         nbOfScooters = 0
     }
 
     fun fetchScootersFromApi() {
         viewModelScope.launch {
-            val latitude = userLocation?.latitude
-            val longitude = userLocation?.longitude
-            val nbOfScooters = nbOfScooters
-            if (latitude != null && longitude != null) {
+            val latitude = origin.latitude
+            val longitude = origin.longitude
+            if (latitude != 0.0 && longitude != 0.0 && nbOfScooters != 0) {
                 try {
                     _scootersLiveData.value = ScooterApi.retrofitService.getScootersNearLocation(
                         latitude,

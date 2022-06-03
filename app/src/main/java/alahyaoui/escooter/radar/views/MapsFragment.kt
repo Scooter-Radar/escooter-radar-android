@@ -13,8 +13,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -53,10 +51,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var clusterManager: ClusterManager<Scooter>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    // Google Map direction attributes
-    private lateinit var destination: Location
-
-
     /* Preference attributes */
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
@@ -81,7 +75,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Integer.parseInt(sharedPreferences.getString("nb_of_scooters", "100"))
 
         // Map initialization
-        destination = Location(LocationManager.GPS_PROVIDER)
         val mapFragment = binding.mapView.getFragment<SupportMapFragment>()
         mapFragment.getMapAsync(callback)
     }
@@ -89,7 +82,6 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
-        map.uiSettings.isMapToolbarEnabled = false
 
         // Create the ClusterManager class and set the custom renderer
         clusterManager = ClusterManager<Scooter>(requireContext(), map)
@@ -128,9 +120,10 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 MapsFragmentDirections.actionMapsDestinationToScooterInfoBottomSheetDestination(item)
             NavHostFragment.findNavController(this).navigate(action)
 
-            destination.latitude = item.location.coordinates[1]
-            destination.longitude = item.location.coordinates[0]
-            initDirectionFab()
+            mapsViewModel.apply {
+                destination.latitude = item.location.coordinates[1]
+                destination.longitude = item.location.coordinates[0]
+            }
             return@setOnClusterItemClickListener false
         }
 
@@ -152,18 +145,20 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initDirectionFab() {
-        var path = "${MapsApiUtls.directionBaseUrl}/?api=1"
-        val origin = mapsViewModel.userLocation
-
-        if (origin != null) {
-            path += "&origin=${origin.latitude},${origin.longitude}"
-        }
-
-        if (destination.latitude != 0.0 && destination.longitude != 0.0) {
-            path += "&destination=${destination?.latitude},${destination?.longitude}"
-        }
-
+        map.uiSettings.isMapToolbarEnabled = false
         binding.directionFAB.setOnClickListener {
+            var path = "${MapsApiUtls.directionBaseUrl}/?api=1"
+            val origin = mapsViewModel.origin
+            val destination = mapsViewModel.destination
+
+            if (origin.latitude != 0.0 && origin.longitude != 0.0) {
+                path += "&origin=${origin.latitude},${origin.longitude}"
+            }
+
+            if (destination.latitude != 0.0 && destination.longitude != 0.0) {
+                path += "&destination=${destination.latitude},${destination.longitude}"
+            }
+
             val intent = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(path)
@@ -175,8 +170,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun initLocationFab() {
         map.uiSettings.isMyLocationButtonEnabled = false
         binding.mapLocationFAB.setOnClickListener {
-            val location = mapsViewModel.userLocation
-            if (location != null) {
+            val location = mapsViewModel.origin
+            if (location.latitude != 0.0 && location.longitude != 0.0) {
                 val userLatLng = LatLng(location.latitude, location.longitude)
                 map.animateCamera(CameraUpdateFactory.newLatLng(userLatLng))
             }
@@ -185,7 +180,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     // Map Type Initialization
 
-    fun initMapType() {
+    private fun initMapType() {
         map.mapType = Integer.parseInt(sharedPreferences.getString("map_type", "1"))
 
         binding.mapTypeSelectionView.apply {
@@ -240,9 +235,9 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    fun updateMapType(mapType: Int) {
+    private fun updateMapType(mapType: Int) {
         map.mapType = mapType
-        editor.putString("map_type", "${mapType}")
+        editor.putString("map_type", "$mapType")
         editor.apply()
     }
 
@@ -365,12 +360,12 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-            mapsViewModel.userLocation = location
+            mapsViewModel.origin = location
             mapsViewModel.fetchScootersFromApi()
         }
 
         map.setOnMyLocationChangeListener { location ->
-            mapsViewModel.userLocation = location
+            mapsViewModel.origin = location
         }
     }
 }
