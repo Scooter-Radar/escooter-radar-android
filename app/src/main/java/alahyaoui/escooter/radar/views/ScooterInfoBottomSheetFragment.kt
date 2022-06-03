@@ -2,11 +2,15 @@ package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetBinding
+import alahyaoui.escooter.radar.utils.MapsApiUtls.directionBaseUrl
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+
 
 class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
 
@@ -25,6 +29,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         if(binding.scooter != null){
             initCompanyImage()
             initScooterImage()
+            initDirectionButton()
         }
 
         return binding.root
@@ -54,5 +59,17 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
             }
 
         binding.imageEscooter.setImageResource(image)
+    }
+
+    fun initDirectionButton(){
+        binding.buttonGoTo.setOnClickListener {
+            val longitude = binding.scooter?.location?.coordinates?.get(0)
+            val latitude = binding.scooter?.location?.coordinates?.get(1)
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("$directionBaseUrl/?api=1&destination=$latitude,$longitude")
+            )
+            startActivity(intent)
+        }
     }
 }

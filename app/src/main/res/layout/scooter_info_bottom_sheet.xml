@@ -136,6 +136,25 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/action_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/button_go_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableTop="@drawable/ic_baseline_directions"
+                        android:text="@string/direction_button_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <ImageView
