@@ -19,6 +19,7 @@
     <string name="map_type_satellite_text">Satellite</string>
     <string name="map_type_terrain_text">Terrain</string>
 
+    <string name="compass_fab_desc">Compass FAB</string>
     <string name="map_type_fab_desc">Map Type FAB</string>
     <string name="map_location_fab_desc">Map Location FAB</string>
     <string name="direction_fab_desc">Direction Fab</string>

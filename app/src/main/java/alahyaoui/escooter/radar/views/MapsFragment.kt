@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.ClusterManager
@@ -92,6 +93,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         initLocationFab()
         initMapTypeFab()
         initMapType()
+        initCompassFab()
         initDirectionFab()
     }
 
@@ -175,6 +177,15 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val userLatLng = LatLng(location.latitude, location.longitude)
                 map.animateCamera(CameraUpdateFactory.newLatLng(userLatLng))
             }
+        }
+    }
+
+    private fun initCompassFab() {
+        map.uiSettings.isCompassEnabled = false
+        binding.compassFAB.setOnClickListener {
+            val cameraPosition =
+                CameraPosition.Builder(map.cameraPosition).bearing(0.0F).build()
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }
     }
 

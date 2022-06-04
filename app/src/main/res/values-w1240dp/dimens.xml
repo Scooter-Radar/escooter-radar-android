@@ -1,3 +1,9 @@
 <resources>
-    <dimen name="fab_margin">200dp</dimen>
+    <!-- FAB -->
+    <dimen name="main_fab_size">84dp</dimen>
+    <dimen name="secondary_fab_size">60dp</dimen>
+    <dimen name="fab_margin">24dp</dimen>
+
+    <!-- Settings -->
+    <dimen name="screen_title">60sp</dimen>
 </resources>
