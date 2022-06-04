@@ -2,7 +2,6 @@ package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
-import alahyaoui.escooter.radar.utils.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import alahyaoui.escooter.radar.utils.MapsApiUrls
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
@@ -343,25 +342,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun requestPermissions() {
         if (TrackingUtility.hasLocationPermissions(requireContext())) {
             onLocationEnabled()
-            return
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app",
-                REQUEST_CODE_LOCATION_PERMISSION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        } else {
-            EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app",
-                REQUEST_CODE_LOCATION_PERMISSION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            )
+        }else{
+            TrackingUtility.requestLocationPermissions(this)
         }
     }
 

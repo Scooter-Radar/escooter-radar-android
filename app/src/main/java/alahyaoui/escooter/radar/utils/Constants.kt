@@ -1,6 +1,6 @@
 package alahyaoui.escooter.radar.utils
 
-object Constants {
+object PermissionConstants {
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
 }
 

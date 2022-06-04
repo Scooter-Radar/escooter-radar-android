@@ -37,7 +37,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    fun initCompanyImage() {
+    private fun initCompanyImage() {
         val image =
             when (binding.scooter?.company?.lowercase()) {
                 "lime" -> R.drawable.ic_lime_logo
@@ -50,7 +50,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         binding.imageCompany.setImageResource(image)
     }
 
-    fun initScooterImage() {
+    private fun initScooterImage() {
         val image =
             when (binding.scooter?.company?.lowercase()) {
                 "lime" -> R.drawable.ic_lime_escooter
@@ -63,7 +63,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         binding.imageEscooter.setImageResource(image)
     }
 
-    fun initRentButton(){
+    private fun initRentButton(){
         val url =
             when (binding.scooter?.company?.lowercase()) {
                 "lime" -> ScooterApplicationUrls.limeUrl
@@ -82,7 +82,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    fun initDirectionButton(){
+    private fun initDirectionButton(){
         binding.buttonGoTo.setOnClickListener {
             val longitude = binding.scooter?.location?.coordinates?.get(0)
             val latitude = binding.scooter?.location?.coordinates?.get(1)
