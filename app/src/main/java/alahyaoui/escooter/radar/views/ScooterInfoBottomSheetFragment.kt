@@ -4,12 +4,14 @@ import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetBinding
 import alahyaoui.escooter.radar.utils.MapsApiUrls.directionBaseUrl
 import alahyaoui.escooter.radar.utils.ScooterApplicationUrls
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -70,7 +72,10 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
                 "bird" -> ScooterApplicationUrls.birdUrl
                 "pony" -> ScooterApplicationUrls.ponyUrl
                 "spin" -> ScooterApplicationUrls.spinUrl
-                else -> ""
+                else -> {
+                    binding.buttonRent.visibility = View.INVISIBLE
+                    return
+                }
             }
 
         binding.buttonRent.setOnClickListener {
@@ -78,7 +83,13 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
                 Intent.ACTION_VIEW,
                 Uri.parse(url)
             )
-            startActivity(intent)
+            try {
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                val text = "Impossible to redirect to e-scooter provider application"
+                val duration = Toast.LENGTH_LONG
+                Toast.makeText(context, text, duration).show()
+            }
         }
     }
 
