@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="scooter"
             type="alahyaoui.escooter.radar.models.Scooter" />
@@ -83,7 +82,7 @@
                         android:contentDescription="@string/city_desc"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
-                        tools:text='@{scooter.city.toUpperCase(), default="City"}' />
+                        tools:text='@{scooter.city.replaceAll("[_-]", " ").toUpperCase(), default="City"}' />
 
                 </LinearLayout>
 
