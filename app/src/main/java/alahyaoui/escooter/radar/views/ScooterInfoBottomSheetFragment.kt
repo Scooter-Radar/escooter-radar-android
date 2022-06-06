@@ -29,7 +29,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         binding = ScooterInfoBottomSheetBinding.inflate(inflater, container, false)
         binding.scooter = ScooterInfoBottomSheetFragmentArgs.fromBundle(requireArguments()).scooter
 
-        if(binding.scooter != null){
+        if (binding.scooter != null) {
             initCompanyImage()
             initScooterImage()
             initRentButton()
@@ -65,7 +65,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         binding.imageEscooter.setImageResource(image)
     }
 
-    private fun initRentButton(){
+    private fun initRentButton() {
         val url =
             when (binding.scooter?.company?.lowercase()) {
                 "lime" -> ScooterApplicationUrls.limeUrl
@@ -86,14 +86,14 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
             try {
                 startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                val text = "Impossible to redirect to e-scooter provider application"
+                val text = getString(R.string.provider_unavailable_error_message)
                 val duration = Toast.LENGTH_LONG
                 Toast.makeText(context, text, duration).show()
             }
         }
     }
 
-    private fun initDirectionButton(){
+    private fun initDirectionButton() {
         binding.buttonGoTo.setOnClickListener {
             val longitude = binding.scooter?.location?.coordinates?.get(0)
             val latitude = binding.scooter?.location?.coordinates?.get(1)
