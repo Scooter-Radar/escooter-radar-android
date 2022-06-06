@@ -1,17 +1,20 @@
 package alahyaoui.escooter.radar.views
 
+import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.MapsApiUrls
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
+import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,12 +24,14 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -35,6 +40,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.maps.android.clustering.ClusterManager
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -323,7 +331,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+        if(!EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+            && !EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
             AppSettingsDialog.Builder(this).build().show()
         } else {
             requestPermissions()
@@ -352,9 +361,37 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         map.isMyLocationEnabled = true
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-            mapsViewModel.origin = location
-            mapsViewModel.fetchScootersFromApi()
+        fetchLastLocation()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun fetchLastLocation() {
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location == null) {
+                fetchCurrentLocation()
+            } else {
+                mapsViewModel.origin = location
+                mapsViewModel.fetchScootersFromApi()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun fetchCurrentLocation() {
+        fusedLocationProviderClient.getCurrentLocation(
+            PRIORITY_HIGH_ACCURACY,
+            object : CancellationToken() {
+                override fun onCanceledRequested(p0: OnTokenCanceledListener) =
+                    CancellationTokenSource().token
+
+                override fun isCancellationRequested() = false
+            }).addOnSuccessListener { location: Location? ->
+            if (location == null) {
+                Toast.makeText(requireContext(), getString(R.string.cannot_get_location_error_message), Toast.LENGTH_LONG).show()
+            } else {
+                mapsViewModel.origin = location
+                mapsViewModel.fetchScootersFromApi()
+            }
         }
     }
 }
