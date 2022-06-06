@@ -39,6 +39,12 @@
     <string name="state_desc">State</string>
     <string name="escooter_image_desc">E-scooter Image</string>
 
+    <!-- Permissions -->
+    <string name="location_permission_rationale_message">You need to accept location permissions to use this app</string>
+
+    <!-- Location -->
+    <string name="cannot_get_location_error_message">Cannot get location.</string>
+
     <!-- Settings -->
     <string name="preferences_title">Settings</string>
 

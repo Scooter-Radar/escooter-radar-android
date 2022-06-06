@@ -8,9 +8,6 @@
     <!-- Request user permission to access precise location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!-- Request user permission to access background location -->
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
     <!-- Request user permission to access Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
