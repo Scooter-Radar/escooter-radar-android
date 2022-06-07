@@ -16,6 +16,11 @@ object TrackingUtility {
         )
     }
 
+    fun hasOnlyCoarseLocationPermissions(context: Context): Boolean {
+        return EasyPermissions.hasPermissions(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                && !EasyPermissions.hasPermissions(context, Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
     fun requestLocationPermissions(fragment: Fragment) {
         EasyPermissions.requestPermissions(
             fragment,

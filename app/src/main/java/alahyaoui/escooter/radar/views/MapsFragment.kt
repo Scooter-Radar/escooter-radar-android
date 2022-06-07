@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -326,13 +327,25 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     // Permission handling
 
+    private var upgradeAsked: Boolean = false
+
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        onLocationEnabled()
+        if (TrackingUtility.hasLocationPermissions(requireContext())) {
+            onLocationEnabled()
+            Log.e("MapsFragment", "Je suis ici")
+        } else if (TrackingUtility.hasOnlyCoarseLocationPermissions(requireContext()) && upgradeAsked) {
+            onLocationEnabled()
+            Log.e("MapsFragment", "Je suis la")
+        }
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        if(!EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
-            && !EasyPermissions.hasPermissions(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
+        if (TrackingUtility.hasOnlyCoarseLocationPermissions(requireContext())) {
+            if (!upgradeAsked) {
+                upgradeAsked = true
+                requestPermissions()
+            }
+        } else if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             AppSettingsDialog.Builder(this).build().show()
         } else {
             requestPermissions()
@@ -351,7 +364,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun requestPermissions() {
         if (TrackingUtility.hasLocationPermissions(requireContext())) {
             onLocationEnabled()
-        }else{
+        } else {
             TrackingUtility.requestLocationPermissions(this)
         }
     }
