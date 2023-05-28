@@ -81,10 +81,20 @@
     <!-- Permissions -->
     <string name="location_permission_rationale_message">You need to accept location permissions to use this app</string>
 
+    <!-- Errors -->
+
+    <!-- Backend -->
+    <string name="cannot_get_scooters_error_message">Cannot get e-scooters from backend: %s</string>
+
     <!-- Location -->
     <string name="cannot_get_location_error_message">Cannot get location.</string>
 
     <!-- Intents -->
     <string name="provider_unavailable_error_message">Impossible to redirect to e-scooter provider application</string>
     <string name="play_store_unavailable_error_message">"Google play store not available"</string>
+
+    <!-- No Internet Connection-->
+    <string name="no_internet_connection_title">No Internet Connection</string>
+    <string name="no_internet_connection_text">Check your Internet Connection and Try Again</string>
+    <string name="no_internet_button_text">Try Again</string>
 </resources>
