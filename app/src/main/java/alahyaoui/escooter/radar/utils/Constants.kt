@@ -4,11 +4,16 @@ object PermissionConstants {
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
 }
 
-object MapsApiUrls{
+object MapsApiUrls {
     const val directionBaseUrl = "https://www.google.com/maps/dir"
 }
 
-object ScooterApplicationUrls{
+object ScooterBackend {
+    const val BASE_URL =
+        "http://escooter-radar-backend-env.eba-gkj72vkn.eu-west-3.elasticbeanstalk.com/api/"
+}
+
+object ScooterApplicationUrls {
     const val limeUrl = "market://launch?id=com.limebike"
     const val ponyUrl = "market://launch?id=co.ponybikes.mercury"
     const val birdUrl = "market://launch?id=co.bird.android"

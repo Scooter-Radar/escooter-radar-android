@@ -6,8 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-
-private const val BASE_URL = "http://escooter-radar-backend-env.eba-gkj72vkn.eu-west-3.elasticbeanstalk.com/api/"
+import alahyaoui.escooter.radar.utils.ScooterBackend
 
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
@@ -23,7 +22,7 @@ private val moshi = Moshi.Builder()
  */
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(BASE_URL)
+    .baseUrl(ScooterBackend.BASE_URL)
     .build()
 
 /**
