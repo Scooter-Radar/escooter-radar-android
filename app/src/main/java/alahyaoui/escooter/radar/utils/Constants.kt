@@ -13,7 +13,7 @@ object ScooterBackend {
         "http://escooter-radar-backend-env.eba-gkj72vkn.eu-west-3.elasticbeanstalk.com/api/"
 }
 
-object ScooterApplicationUrls {
+object ScooterIntentUrls {
     const val limeUrl = "market://launch?id=com.limebike"
     const val ponyUrl = "market://launch?id=co.ponybikes.mercury"
     const val birdUrl = "market://launch?id=co.bird.android"

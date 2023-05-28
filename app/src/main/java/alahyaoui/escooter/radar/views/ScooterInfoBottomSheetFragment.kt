@@ -3,7 +3,7 @@ package alahyaoui.escooter.radar.views
 import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetBinding
 import alahyaoui.escooter.radar.utils.MapsApiUrls.directionBaseUrl
-import alahyaoui.escooter.radar.utils.ScooterApplicationUrls
+import alahyaoui.escooter.radar.utils.ScooterIntentUrls
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -68,10 +68,10 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
     private fun initRentButton() {
         val url =
             when (binding.scooter?.company?.lowercase()) {
-                "lime" -> ScooterApplicationUrls.limeUrl
-                "bird" -> ScooterApplicationUrls.birdUrl
-                "pony" -> ScooterApplicationUrls.ponyUrl
-                "spin" -> ScooterApplicationUrls.spinUrl
+                "lime" -> ScooterIntentUrls.limeUrl
+                "bird" -> ScooterIntentUrls.birdUrl
+                "pony" -> ScooterIntentUrls.ponyUrl
+                "spin" -> ScooterIntentUrls.spinUrl
                 else -> {
                     binding.buttonRent.visibility = View.INVISIBLE
                     return
