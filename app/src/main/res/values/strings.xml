@@ -84,7 +84,10 @@
     <!-- Errors -->
 
     <!-- Backend -->
-    <string name="cannot_get_scooters_error_message">Cannot get e-scooters from backend: %s</string>
+    <string name="alert_dialog_backend_connection_error_title">Server Error</string>
+    <string name="alert_dialog_backend_connection_error_desc">"Unable to connect to server. Please try again later."</string>
+    <string name="alert_dialog_positive_button_backend_connection_error">Retry</string>
+    <string name="alert_dialog_negative_button_backend_connection_error">Exit</string>
 
     <!-- Location -->
     <string name="cannot_get_location_error_message">Cannot get location.</string>

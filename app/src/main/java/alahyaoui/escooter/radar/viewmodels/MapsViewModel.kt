@@ -2,6 +2,7 @@ package alahyaoui.escooter.radar.viewmodels
 
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.models.ScooterApi
+import alahyaoui.escooter.radar.utils.Resource
 import android.location.Location
 import android.location.LocationManager
 import androidx.lifecycle.LiveData
@@ -13,9 +14,9 @@ import kotlinx.coroutines.launch
 class MapsViewModel : ViewModel() {
 
     /* Scooters state */
-    private val _scootersLiveData = MutableLiveData<List<Scooter>>()
+    private val _scootersLiveData = MutableLiveData<Resource<List<Scooter>>>()
 
-    val scootersLiveData: LiveData<List<Scooter>> = _scootersLiveData
+    val scootersLiveData: LiveData<Resource<List<Scooter>>> = _scootersLiveData
 
     var nbOfScooters: Int
 
@@ -30,18 +31,22 @@ class MapsViewModel : ViewModel() {
     }
 
     fun fetchScootersFromApi() {
+        _scootersLiveData.value = Resource.loading()
         viewModelScope.launch {
             val latitude = origin.latitude
             val longitude = origin.longitude
             if (latitude != 0.0 && longitude != 0.0 && nbOfScooters != 0) {
                 try {
-                    _scootersLiveData.value = ScooterApi.retrofitService.getScootersNearLocation(
-                        latitude,
-                        longitude,
-                        nbOfScooters
+                    _scootersLiveData.value = Resource.success(
+                        ScooterApi.retrofitService.getScootersNearLocation(
+                            latitude,
+                            longitude,
+                            nbOfScooters
+                        )
                     )
-                } catch (e: Exception) {
-                    _scootersLiveData.value = listOf()
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                    _scootersLiveData.value = Resource.error(error)
                 }
             }
         }

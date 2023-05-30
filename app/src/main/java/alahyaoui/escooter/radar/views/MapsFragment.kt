@@ -4,10 +4,10 @@ import alahyaoui.escooter.radar.R
 import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.MapsApiUrls
+import alahyaoui.escooter.radar.utils.Resource
 import alahyaoui.escooter.radar.utils.ScooterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
-import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -106,22 +107,68 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initViewModelObservers() {
-        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) { scooters ->
-            addClusteredMarkers()
+        mapsViewModel.scootersLiveData.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    // Show loading state
+                    showLoadingState()
+                }
 
-            // Ensure all places are visible in the map
-            val bounds = LatLngBounds.builder()
-            scooters.forEach { bounds.include(it.position) }
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+                is Resource.Success -> {
+                    // Handle success state
+                    val scooters = resource.data
+                    showData(scooters)
+                }
+
+                is Resource.Error -> {
+                    // Handle error state
+                    showError()
+                }
+            }
         }
+    }
+
+    private fun showLoadingState() {
+        binding.loadingPanel.visibility = View.VISIBLE
+    }
+
+    private fun showData(scooters: List<Scooter>) {
+        binding.loadingPanel.visibility = View.GONE
+        addClusteredMarkers(scooters)
+
+        // Ensure all places are visible in the map
+        val bounds = LatLngBounds.builder()
+        scooters.forEach { bounds.include(it.position) }
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 20))
+    }
+
+    private fun showError() {
+        binding.loadingPanel.visibility = View.GONE
+
+        val title = R.string.alert_dialog_backend_connection_error_title
+        val message = R.string.alert_dialog_backend_connection_error_desc
+        val positiveButtonLabel = R.string.alert_dialog_positive_button_backend_connection_error
+        val negativeButtonLabel = R.string.alert_dialog_negative_button_backend_connection_error
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonLabel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                mapsViewModel.fetchScootersFromApi()
+            }
+            .setNegativeButton(negativeButtonLabel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                (activity as MainActivity).finish()
+            }
+            .show()
     }
 
     /**
      * Adds markers to the map with clustering support.
      */
-    private fun addClusteredMarkers() {
+    private fun addClusteredMarkers(scooters: List<Scooter>) {
         // Add the places to the ClusterManager
-        val scooters = mapsViewModel.scootersLiveData.value
         clusterManager.addItems(scooters)
         clusterManager.cluster()
 
@@ -209,10 +256,12 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     mapTypeSatelliteBackground.visibility = View.VISIBLE
                     mapTypeSatelliteText.setTextColor(Color.BLUE)
                 }
+
                 GoogleMap.MAP_TYPE_TERRAIN -> {
                     mapTypeTerrainBackground.visibility = View.VISIBLE
                     mapTypeTerrainText.setTextColor(Color.BLUE)
                 }
+
                 else -> {
                     mapTypeDefaultBackground.visibility = View.VISIBLE
                     mapTypeDefaultText.setTextColor(Color.BLUE)
@@ -400,7 +449,11 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 override fun isCancellationRequested() = false
             }).addOnSuccessListener { location: Location? ->
             if (location == null) {
-                Toast.makeText(requireContext(), getString(R.string.cannot_get_location_error_message), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.cannot_get_location_error_message),
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
                 mapsViewModel.origin = location
                 mapsViewModel.fetchScootersFromApi()
