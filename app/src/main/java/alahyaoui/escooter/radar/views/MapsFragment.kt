@@ -1,7 +1,7 @@
 package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.R
-import alahyaoui.escooter.radar.databinding.FragmentMapsBinding
+import alahyaoui.escooter.radar.databinding.MapsFragmentBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.MapsApiUrls
 import alahyaoui.escooter.radar.utils.Resource
@@ -19,7 +19,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -52,7 +51,7 @@ import pub.devrel.easypermissions.EasyPermissions
 
 class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
-    private lateinit var binding: FragmentMapsBinding
+    private lateinit var binding: MapsFragmentBinding
 
     private val mapsViewModel by viewModels<MapsViewModel>()
 
@@ -70,7 +69,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMapsBinding.inflate(inflater, container, false)
+        binding = MapsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -381,10 +380,8 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         if (TrackingUtility.hasLocationPermissions(requireContext())) {
             onLocationEnabled()
-            Log.e("MapsFragment", "Je suis ici")
         } else if (TrackingUtility.hasOnlyCoarseLocationPermissions(requireContext()) && upgradeAsked) {
             onLocationEnabled()
-            Log.e("MapsFragment", "Je suis la")
         }
     }
 

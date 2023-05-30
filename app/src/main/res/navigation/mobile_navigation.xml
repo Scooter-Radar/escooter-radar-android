@@ -8,7 +8,7 @@
         android:id="@+id/maps_destination"
         android:name="alahyaoui.escooter.radar.views.MapsFragment"
         android:label="@string/menu_maps"
-        tools:layout="@layout/fragment_maps">
+        tools:layout="@layout/maps_fragment">
         <action
             android:id="@+id/action_maps_destination_to_scooter_info_bottom_sheet_destination"
             app:destination="@id/scooter_info_bottom_sheet_destination" />
