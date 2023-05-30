@@ -1,7 +1,7 @@
 package alahyaoui.escooter.radar.views
 
 import alahyaoui.escooter.radar.R
-import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetBinding
+import alahyaoui.escooter.radar.databinding.ScooterInfoBottomSheetFragmentBinding
 import alahyaoui.escooter.radar.utils.MapsApiUrls.directionBaseUrl
 import alahyaoui.escooter.radar.utils.ScooterIntentUrls
 import android.content.ActivityNotFoundException
@@ -17,7 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
 
-    private lateinit var binding: ScooterInfoBottomSheetBinding
+    private lateinit var binding: ScooterInfoBottomSheetFragmentBinding
 
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
@@ -26,7 +26,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ScooterInfoBottomSheetBinding.inflate(inflater, container, false)
+        binding = ScooterInfoBottomSheetFragmentBinding.inflate(inflater, container, false)
         binding.scooter = ScooterInfoBottomSheetFragmentArgs.fromBundle(requireArguments()).scooter
 
         if (binding.scooter != null) {
