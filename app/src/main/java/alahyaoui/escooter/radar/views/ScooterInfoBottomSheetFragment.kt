@@ -67,7 +67,7 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun initRentButton() {
         val url =
-            when (binding.scooter?.company?.lowercase()) {
+            binding.scooter?.rentalUris?.android ?: when (binding.scooter?.company?.lowercase()) {
                 "lime" -> ScooterIntentUrls.limeUrl
                 "bird" -> ScooterIntentUrls.birdUrl
                 "pony" -> ScooterIntentUrls.ponyUrl
