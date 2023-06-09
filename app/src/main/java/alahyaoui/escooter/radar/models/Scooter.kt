@@ -15,8 +15,11 @@ data class Scooter(
     @Json(name = "company")
     var company: String,
 
-    @Json(name = "city")
-    var city: String,
+    @Json(name = "address")
+    var address: String,
+
+    @Json(name = "country_code")
+    var countryCode: String,
 
     @Json(name = "location")
     var location: Location,
@@ -28,14 +31,29 @@ data class Scooter(
     var isReserved: Boolean,
 
     @Json(name = "last_reported")
-    var lastReported: Long,
+    var lastReported: Long?,
 
     @Json(name = "current_range_meters")
-    var currentRangeMeters: Double,
+    var currentRangeMeters: Double?,
+
+    @Json(name = "pricing_plan_id")
+    var pricingPlanId: String?,
+
+    @Json(name = "rental_uris")
+    var rentalUris: RentalUris?,
 ) : Parcelable, ClusterItem {
     override fun getPosition(): LatLng = LatLng(location.coordinates[1], location.coordinates[0])
 
     override fun getTitle(): String = company
 
-    override fun getSnippet(): String = city
+    override fun getSnippet(): String = address
 }
+
+@Parcelize
+data class RentalUris(
+    @Json(name = "android")
+    var android: String,
+
+    @Json(name = "ios")
+    var ios: String
+) : Parcelable
