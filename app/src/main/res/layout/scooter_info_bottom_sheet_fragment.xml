@@ -81,7 +81,7 @@
                         android:contentDescription="@string/city_desc"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/bottom_sheet_field_text_size"
-                        tools:text='@{scooter.city.replaceAll("[_-]", " ").toUpperCase(), default="City"}' />
+                        tools:text='@{scooter.address.replaceAll("[_-]", " ").toUpperCase(), default="City"}' />
 
                 </LinearLayout>
 
