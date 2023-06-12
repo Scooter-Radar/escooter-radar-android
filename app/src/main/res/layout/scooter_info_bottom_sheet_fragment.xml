@@ -57,7 +57,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/bottom_sheet_field_text_title_size"
                         android:textStyle="bold"
-                        tools:text='@{scooter.company, default="Company"}' />
+                        tools:text='@{scooter.company, default="Unknown"}' />
                 </LinearLayout>
 
                 <LinearLayout
@@ -81,7 +81,7 @@
                         android:contentDescription="@string/city_desc"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/bottom_sheet_field_text_size"
-                        tools:text='@{scooter.address.replaceAll("[_-]", " ").toUpperCase(), default="City"}' />
+                        tools:text='@{scooter.address.replaceAll("[_-]", " ").toUpperCase(), default="Unknown"}' />
 
                 </LinearLayout>
 
@@ -106,7 +106,7 @@
                         android:contentDescription="@string/current_range_meters_desc"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/bottom_sheet_field_text_size"
-                        tools:text='@{String.valueOf( (int) scooter.currentRangeMeters/1000) + " km", default="Current Range Metters"}' />
+                        tools:text='@{String.valueOf( (int) scooter.currentRangeMeters/1000) + " km", default="Unknown"}' />
                 </LinearLayout>
 
                 <LinearLayout
@@ -130,7 +130,7 @@
                         android:contentDescription="@string/state_desc"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/bottom_sheet_field_text_size"
-                        tools:text='@{!scooter.reserved ? (scooter.disabled ? "Disabled" : "Available") : "Reserved", default="State"}' />
+                        tools:text='@{!scooter.reserved ? (scooter.disabled ? "Disabled" : "Available") : "Reserved", default="Unknown"}' />
 
                 </LinearLayout>
 
