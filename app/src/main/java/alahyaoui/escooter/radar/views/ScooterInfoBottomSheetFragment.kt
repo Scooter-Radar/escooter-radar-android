@@ -42,10 +42,13 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
     private fun initCompanyImage() {
         val image =
             when (binding.scooter?.company?.lowercase()) {
-                "lime" -> R.drawable.ic_lime_logo
                 "bird" -> R.drawable.ic_bird_logo
+                "dott" -> R.drawable.ic_dott_logo
+                "lime" -> R.drawable.ic_lime_logo
+                "lyft" -> R.drawable.ic_lyft_logo
                 "pony" -> R.drawable.ic_pony_logo
                 "spin" -> R.drawable.ic_spin_logo
+                "tier" -> R.drawable.ic_tier_logo
                 else -> R.drawable.ic_baseline_electric_scooter
             }
 
@@ -55,10 +58,13 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
     private fun initScooterImage() {
         val image =
             when (binding.scooter?.company?.lowercase()) {
-                "lime" -> R.drawable.ic_lime_escooter
                 "bird" -> R.drawable.ic_bird_escooter
+                "dott" -> R.drawable.ic_dott_escooter
+                "lime" -> R.drawable.ic_lime_escooter
+                "lyft" -> R.drawable.ic_lyft_escooter
                 "pony" -> R.drawable.ic_pony_escooter
                 "spin" -> R.drawable.ic_spin_escooter
+                "tier" -> R.drawable.ic_tier_escooter
                 else -> R.drawable.ic_baseline_electric_scooter
             }
 
@@ -68,10 +74,13 @@ class ScooterInfoBottomSheetFragment : BottomSheetDialogFragment() {
     private fun initRentButton() {
         val url =
             binding.scooter?.rentalUris?.android ?: when (binding.scooter?.company?.lowercase()) {
-                "lime" -> ScooterIntentUrls.limeUrl
                 "bird" -> ScooterIntentUrls.birdUrl
+                "dott" -> ScooterIntentUrls.dottUrl
+                "lime" -> ScooterIntentUrls.limeUrl
+                "lyft" -> ScooterIntentUrls.lyftUrl
                 "pony" -> ScooterIntentUrls.ponyUrl
                 "spin" -> ScooterIntentUrls.spinUrl
+                "tier" -> ScooterIntentUrls.tierUrl
                 else -> {
                     binding.buttonRent.visibility = View.INVISIBLE
                     return

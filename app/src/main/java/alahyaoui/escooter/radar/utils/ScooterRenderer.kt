@@ -47,6 +47,26 @@ class ScooterRenderer(
     }
 
     /**
+     * The icon to use for each bird e-scooter cluster item
+     */
+    private val birdIcon: BitmapDescriptor by lazy {
+        BitmapHelper.vectorToBitmap(
+            context,
+            R.drawable.ic_bird_logo,
+        )
+    }
+
+    /**
+     * The icon to use for each dott e-scooter cluster item
+     */
+    private val dottIcon: BitmapDescriptor by lazy {
+        BitmapHelper.vectorToBitmap(
+            context,
+            R.drawable.ic_dott_logo,
+        )
+    }
+
+    /**
      * The icon to use for lime e-scooter cluster item
      */
     private val limeIcon: BitmapDescriptor by lazy {
@@ -57,12 +77,12 @@ class ScooterRenderer(
     }
 
     /**
-     * The icon to use for each bird e-scooter cluster item
+     * The icon to use for lyft e-scooter cluster item
      */
-    private val birdIcon: BitmapDescriptor by lazy {
+    private val lyftIcon: BitmapDescriptor by lazy {
         BitmapHelper.vectorToBitmap(
             context,
-            R.drawable.ic_bird_logo,
+            R.drawable.ic_lyft_logo,
         )
     }
 
@@ -77,12 +97,22 @@ class ScooterRenderer(
     }
 
     /**
-     * The icon to use for each cluster item
+     * The icon to use for each spin e-scooter cluster item
      */
     private val spinIcon: BitmapDescriptor by lazy {
         BitmapHelper.vectorToBitmap(
             context,
             R.drawable.ic_spin_logo,
+        )
+    }
+
+    /**
+     * The icon to use for each tier e-scooter cluster item
+     */
+    private val tierIcon: BitmapDescriptor by lazy {
+        BitmapHelper.vectorToBitmap(
+            context,
+            R.drawable.ic_tier_logo,
         )
     }
 
@@ -101,14 +131,7 @@ class ScooterRenderer(
      * options should be set
      */
     override fun onBeforeClusterItemRendered(item: Scooter, markerOptions: MarkerOptions) {
-        val scooterIcon: BitmapDescriptor =
-            when (item.company.lowercase()) {
-                "lime" -> limeIcon
-                "bird" -> birdIcon
-                "pony" -> ponyIcon
-                "spin" -> spinIcon
-                else -> defaultIcon
-            }
+        val scooterIcon: BitmapDescriptor = getIcon(item.company)
         markerOptions
             .position(item.position)
             .icon(scooterIcon)
@@ -116,15 +139,21 @@ class ScooterRenderer(
 
     override fun onClusterItemUpdated(item: Scooter, marker: Marker) {
         super.onClusterItemUpdated(item, marker)
-        val scooterIcon: BitmapDescriptor =
-            when (item.company.lowercase()) {
-                "lime" -> limeIcon
-                "bird" -> birdIcon
-                "pony" -> ponyIcon
-                "spin" -> spinIcon
-                else -> defaultIcon
-            }
+        val scooterIcon: BitmapDescriptor = getIcon(item.company)
         marker.position = item.position
         marker.setIcon(scooterIcon)
+    }
+
+    private fun getIcon(company: String): BitmapDescriptor {
+        return when (company.lowercase()) {
+            "bird" -> birdIcon
+            "dott" -> dottIcon
+            "lime" -> limeIcon
+            "lyft" -> lyftIcon
+            "pony" -> ponyIcon
+            "spin" -> spinIcon
+            "tier" -> tierIcon
+            else -> defaultIcon
+        }
     }
 }
