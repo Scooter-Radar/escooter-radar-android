@@ -47,6 +47,8 @@ data class Scooter(
     override fun getTitle(): String = company
 
     override fun getSnippet(): String = address
+
+    override fun getZIndex(): Float? = currentRangeMeters?.toFloat()
 }
 
 @Parcelize

@@ -326,7 +326,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             anim.interpolator = AccelerateDecelerateInterpolator()
 
             anim.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
                     super.onAnimationEnd(animation)
                     mapTypeSelection.visibility = View.VISIBLE
                 }
@@ -356,7 +356,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 anim.interpolator = AccelerateDecelerateInterpolator()
 
                 anim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
+                    override fun onAnimationEnd(animation: Animator) {
                         super.onAnimationEnd(animation)
                         mapTypeSelection.visibility = View.INVISIBLE
                     }
