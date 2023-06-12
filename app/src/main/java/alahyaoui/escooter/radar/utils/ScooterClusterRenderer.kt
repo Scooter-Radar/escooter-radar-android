@@ -16,7 +16,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
 
 
-class ScooterRenderer(
+class ScooterClusterRenderer(
     private val context: Context,
     map: GoogleMap,
     clusterManager: ClusterManager<Scooter>

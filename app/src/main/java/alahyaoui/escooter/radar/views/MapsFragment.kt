@@ -5,7 +5,7 @@ import alahyaoui.escooter.radar.databinding.MapsFragmentBinding
 import alahyaoui.escooter.radar.models.Scooter
 import alahyaoui.escooter.radar.utils.MapsApiUrls
 import alahyaoui.escooter.radar.utils.Resource
-import alahyaoui.escooter.radar.utils.ScooterRenderer
+import alahyaoui.escooter.radar.utils.ScooterClusterRenderer
 import alahyaoui.escooter.radar.utils.TrackingUtility
 import alahyaoui.escooter.radar.viewmodels.MapsViewModel
 import android.animation.Animator
@@ -94,7 +94,7 @@ class MapsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         // Create the ClusterManager class and set the custom renderer
         clusterManager = ClusterManager<Scooter>(requireContext(), map)
-        clusterManager.renderer = ScooterRenderer(requireContext(), map, clusterManager)
+        clusterManager.renderer = ScooterClusterRenderer(requireContext(), map, clusterManager)
 
         requestPermissions()
         initViewModelObservers()
